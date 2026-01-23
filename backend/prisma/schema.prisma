@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ItemType {
+  YOUTUBE
+  DRIVE
+  ONEDRIVE
+  OTHER
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("ADMIN")
+  createdAt    DateTime @default(now())
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  items       Item[]
+}
+
+model Item {
+  id          String   @id @default(cuid())
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  type        ItemType @default(OTHER)
+  title       String
+  url         String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
