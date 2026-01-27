@@ -8,6 +8,7 @@ const adminRoutes = require("./routes/admin.routes");
 
 const app = express();
 
+// ✅ CORS (por ahora abierto, luego lo cerramos si quieres)
 app.use(cors());
 app.use(express.json());
 
@@ -17,7 +18,11 @@ app.use("/api", publicRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 
-const port = process.env.PORT || 4000;
-app.listen(port, () =>
-  console.log(`✅ API running on http://localhost:${port}`),
-);
+const port = Number(process.env.PORT || 4000);
+
+// ✅ IMPORTANTE: escuchar en 0.0.0.0 para que sea accesible desde tu celular por LAN
+app.listen(port, "0.0.0.0", () => {
+  console.log(`✅ API running:`);
+  console.log(`   - Local: http://localhost:${port}`);
+  console.log(`   - LAN:   http://192.168.100.10:${port}`);
+});
