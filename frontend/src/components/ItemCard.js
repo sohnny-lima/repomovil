@@ -1,17 +1,21 @@
 import React from 'react';
-import { Text, View, TouchableOpacity, Linking, Platform } from 'react-native';
+import { Text, View, TouchableOpacity, Linking, Image, Platform } from 'react-native';
 
-const getTypeConfig = (type) => {
+const getTypeIcon = (type) => {
+  // En un caso real usaríamos iconos de verdad (svg/image assets)
+  // Por ahora simulamos con colores e iniciales o urls directas si fueran iconos
   switch (type) {
-    case 'YOUTUBE': return { color: 'text-youtube', bg: 'bg-youtube', label: 'YouTube' };
-    case 'DRIVE': return { color: 'text-drive', bg: 'bg-drive', label: 'Drive' };
-    case 'ONEDRIVE': return { color: 'text-onedrive', bg: 'bg-onedrive', label: 'OneDrive' };
-    default: return { color: 'text-other', bg: 'bg-other', label: 'Link' };
+    case 'PDF': return { uri: 'https://cdn-icons-png.flaticon.com/512/337/337946.png', bg: 'bg-red-50' };
+    case 'AUDIO': return { uri: 'https://cdn-icons-png.flaticon.com/512/3209/3209265.png', bg: 'bg-blue-50' };
+    case 'IMAGE': return { uri: 'https://cdn-icons-png.flaticon.com/512/3342/3342137.png', bg: 'bg-green-50' };
+    case 'VIDEO': 
+    case 'YOUTUBE': return { uri: 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png', bg: 'bg-red-50' };
+    default: return { uri: 'https://cdn-icons-png.flaticon.com/512/2814/2814368.png', bg: 'bg-gray-50' };
   }
 };
 
 export default function ItemCard({ item }) {
-  const { color, bg, label } = getTypeConfig(item.type);
+  const iconConfig = getTypeIcon(item.type);
 
   const handlePress = async () => {
     if (item.url) {
@@ -22,29 +26,30 @@ export default function ItemCard({ item }) {
 
   return (
     <TouchableOpacity 
-      className="bg-white rounded-xl mb-3 flex-row overflow-hidden shadow-sm active:opacity-90 border border-gray-100"
+      className="bg-white rounded-full mb-3 flex-row items-center p-2 pr-6 shadow-sm active:opacity-90"
       style={Platform.select({
-        web: { boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)' },
+        web: { boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.05)' },
         default: { elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2 }
       })}
       onPress={handlePress}
     >
-      <View className={`w-2 ${bg}`} />
-      <View className="flex-1 p-4">
-        <View className="flex-row justify-between items-center mb-1">
-            <View className={`px-2 py-0.5 rounded-full bg-gray-100`}>
-                <Text className={`text-[10px] font-bold uppercase ${color}`}>
-                    {label}
-                </Text>
-            </View>
-            <Text className="text-[10px] text-gray-400">
-                {new Date(item.createdAt).toLocaleDateString()}
-            </Text>
-        </View>
-        <Text className="text-base font-semibold text-gray-800 mb-1 leading-snug">{item.title}</Text>
-        {item.description && (
-          <Text className="text-xs text-gray-500 line-clamp-2">{item.description}</Text>
-        )}
+      <View className={`w-12 h-12 rounded-full overflow-hidden justify-center items-center mr-4 ${iconConfig.bg}`}>
+          {/* Si tuviera iconos de libreria: <Icon name="..." /> */}
+          <Image 
+            source={{ uri: iconConfig.uri }} 
+            className="w-8 h-8"
+            resizeMode="contain"
+          />
+      </View>
+      
+      <View className="flex-1 justify-center">
+        <Text className="text-sm font-bold text-gray-800" numberOfLines={2}>
+            {item.title}
+        </Text>
+      </View>
+
+      <View className="ml-2">
+        <Text className="text-gray-400 text-lg">⋮</Text>
       </View>
     </TouchableOpacity>
   );
