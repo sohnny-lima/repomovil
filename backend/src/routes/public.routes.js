@@ -2,9 +2,28 @@ const router = require("express").Router();
 const prisma = require("../prisma");
 
 // GET /api/search?q=...
+// GET /api/search?q=...
 router.get("/search", async (req, res) => {
   const q = String(req.query.q || "").trim();
-  if (!q) return res.json([]);
+  
+  if (!q) {
+    // If no query, return recent items
+    const recentItems = await prisma.item.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: {
+        id: true,
+        type: true,
+        title: true,
+        url: true,
+        description: true,
+        createdAt: true,
+        category: { select: { id: true, name: true } },
+      },
+    });
+    return res.json(recentItems);
+  }
 
   const items = await prisma.item.findMany({
     where: {
@@ -36,7 +55,26 @@ router.get("/categories", async (req, res) => {
   const categories = await prisma.category.findMany({
     where: { isActive: true },
     orderBy: { createdAt: "desc" },
-    select: { id: true, name: true, description: true, createdAt: true },
+    select: { 
+      id: true, 
+      name: true, 
+      description: true, 
+      iconKey: true, 
+      iconColor: true, 
+      createdAt: true,
+      items: {
+        where: { isActive: true },
+        orderBy: { createdAt: "desc" },
+        take: 5, // Limit to 5 per category for home screen? Or all? User said "visualizarlo", let's take 5 for preview or all. Let's take 10 to be safe.
+        select: {
+            id: true,
+            title: true,
+            type: true,
+            url: true,
+            description: true
+        }
+      }
+    },
   });
   res.json(categories);
 });
@@ -54,11 +92,22 @@ router.get("/categories/:id/items", async (req, res) => {
       title: true,
       url: true,
       description: true,
+      iconKey: true,
+      iconColor: true,
       createdAt: true,
     },
   });
 
   res.json(items);
+});
+
+// GET /api/hero
+router.get("/hero", async (req, res) => {
+  const slides = await prisma.heroSlide.findMany({
+    where: { isActive: true },
+    orderBy: { order: "asc" },
+  });
+  res.json(slides);
 });
 
 module.exports = router;

@@ -1,56 +1,78 @@
 import React from 'react';
-import { Text, View, TouchableOpacity, Linking, Image, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, Linking, Alert } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Colors from '../constants/Colors';
 
-const getTypeIcon = (type) => {
-  // En un caso real usaríamos iconos de verdad (svg/image assets)
-  // Por ahora simulamos con colores e iniciales o urls directas si fueran iconos
-  switch (type) {
-    case 'PDF': return { uri: 'https://cdn-icons-png.flaticon.com/512/337/337946.png', bg: 'bg-red-50' };
-    case 'AUDIO': return { uri: 'https://cdn-icons-png.flaticon.com/512/3209/3209265.png', bg: 'bg-blue-50' };
-    case 'IMAGE': return { uri: 'https://cdn-icons-png.flaticon.com/512/3342/3342137.png', bg: 'bg-green-50' };
-    case 'VIDEO': 
-    case 'YOUTUBE': return { uri: 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png', bg: 'bg-red-50' };
-    default: return { uri: 'https://cdn-icons-png.flaticon.com/512/2814/2814368.png', bg: 'bg-gray-50' };
-  }
+const ICON_MAP = {
+  // Dynamic icons
+  folder: 'folder-outline',
+  book: 'book-open-page-variant',
+  video: 'youtube', // map user selection 'video' to 'youtube' icon name
+  youtube: 'youtube', 
+  music: 'music',
+  clock: 'clock-outline',
+  link: 'link-variant',
+  star: 'star',
+  heart: 'heart',
+  school: 'school',
+  earth: 'earth',
+  
+  // Type fallbacks (if iconKey is missing)
+  YOUTUBE: 'youtube',
+  DRIVE: 'google-drive', // Note: Make sure 'google-drive' exists in MaterialCommunityIcons, otherwise fallback to cloud
+  ONEDRIVE: 'cloud',
+  OTHER: 'link',
 };
 
-export default function ItemCard({ item }) {
-  const iconConfig = getTypeIcon(item.type);
+// Safe fallback icon name if map fails
+const FALLBACK_ICON = 'link';
 
+export default function ItemCard({ item }) {
   const handlePress = async () => {
-    if (item.url) {
+    try {
       const supported = await Linking.canOpenURL(item.url);
-      if (supported) await Linking.openURL(item.url);
+      if (supported) {
+        await Linking.openURL(item.url);
+      } else {
+        Alert.alert("Error", "No se puede abrir este enlace: " + item.url);
+      }
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Error", "Ocurrió un error al intentar abrir el enlace.");
     }
   };
 
+  // Decide icon: User custom icon > Type fallback > Default
+  const rawKey = item.iconKey || item.type || 'OTHER';
+  const iconName = ICON_MAP[rawKey] || ICON_MAP.OTHER || FALLBACK_ICON;
+  
+  // Decide color: User custom color > Type fallback color > Default primary
+  let iconColor = item.iconColor;
+  if (!iconColor) {
+      // Fallback colors based on type if no custom color set
+      if (item.type === 'YOUTUBE') iconColor = '#FF0000';
+      else if (item.type === 'DRIVE') iconColor = '#1FA463';
+      else if (item.type === 'ONEDRIVE') iconColor = '#0078D4';
+      else iconColor = Colors.primary;
+  }
+
   return (
     <TouchableOpacity 
-      className="bg-white rounded-full mb-3 flex-row items-center p-2 pr-6 shadow-sm active:opacity-90"
-      style={Platform.select({
-        web: { boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.05)' },
-        default: { elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2 }
-      })}
       onPress={handlePress}
+      className="flex-row items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100"
+      activeOpacity={0.8}
     >
-      <View className={`w-12 h-12 rounded-full overflow-hidden justify-center items-center mr-4 ${iconConfig.bg}`}>
-          {/* Si tuviera iconos de libreria: <Icon name="..." /> */}
-          <Image 
-            source={{ uri: iconConfig.uri }} 
-            className="w-8 h-8"
-            resizeMode="contain"
-          />
-      </View>
-      
-      <View className="flex-1 justify-center">
-        <Text className="text-sm font-bold text-gray-800" numberOfLines={2}>
-            {item.title}
-        </Text>
+      <View className="w-10 h-10 rounded-full items-center justify-center mr-4" style={{ backgroundColor: iconColor + '20' }}>
+         <MaterialCommunityIcons name={iconName} size={24} color={iconColor} />
       </View>
 
-      <View className="ml-2">
-        <Text className="text-gray-400 text-lg">⋮</Text>
+      <View className="flex-1">
+          <Text className="text-gray-600 text-sm italic" numberOfLines={2}>
+             {item.description || "Ver recurso"}
+          </Text>
       </View>
+
+      <MaterialCommunityIcons name="open-in-new" size={20} color={Colors.primary} />
     </TouchableOpacity>
   );
 }

@@ -1,13 +1,23 @@
 import React from 'react';
 import { Text, View, TouchableOpacity, Image, Platform } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+const ICON_MAP = {
+  folder: 'folder-outline',
+  book: 'book-open-page-variant',
+  video: 'youtube',
+  music: 'music',
+  clock: 'clock-outline',
+  link: 'link-variant',
+  star: 'star',
+  heart: 'heart',
+  school: 'school',
+  earth: 'earth'
+};
 
 export default function CategoryCard({ category, onPress }) {
-  // Configuración de imagen/icono basado en el nombre (mock simple)
-  // En producción esto vendría del backend
-  const getIcon = () => {
-    // Retorna una imagen aleatoria fija por ahora para simular el diseño
-    return 'https://ui-avatars.com/api/?name=' + category.name.replace(' ', '+') + '&background=0D8ABC&color=fff&rounded=true&bold=true';
-  };
+  const iconName = ICON_MAP[category.iconKey] || ICON_MAP.folder;
+  const color = category.iconColor || '#2563eb'; // Default to a nice blue if not set
 
   return (
     <TouchableOpacity 
@@ -18,12 +28,9 @@ export default function CategoryCard({ category, onPress }) {
       })}
       onPress={onPress}
     >
-      <View className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 mr-4">
-          <Image 
-            source={{ uri: getIcon() }} 
-            className="w-full h-full"
-            resizeMode="cover"
-          />
+      <View className="w-12 h-12 rounded-full overflow-hidden items-center justify-center bg-gray-50 mr-4">
+           {/* Fallback to image if no icon key found? Or just simple icon */}
+           <MaterialCommunityIcons name={iconName} size={24} color={color} />
       </View>
       
       <View className="flex-1 justify-center">

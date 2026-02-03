@@ -1,14 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, ActivityIndicator, Text, Image, StatusBar } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import client from '../api/client';
 import ItemCard from '../components/ItemCard';
 import Colors from '../constants/Colors';
 
+const ICON_MAP = {
+  folder: 'folder-outline',
+  book: 'book-open-page-variant',
+  video: 'youtube',
+  music: 'music',
+  clock: 'clock-outline',
+  link: 'link-variant',
+  star: 'star',
+  heart: 'heart',
+  school: 'school',
+  earth: 'earth'
+};
+
 export default function CategoryScreen({ route, navigation }) {
-  const { categoryId, categoryName } = route.params;
+  const { categoryId, categoryName, categoryDescription, iconKey, iconColor } = route.params;
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Get Icon props
+  const iconName = ICON_MAP[iconKey] || ICON_MAP.folder;
+  const color = iconColor || '#fff'; // In header we might want white, or the specific color. Let's use specific color or white.
 
   // Set header title to empty or custom to avoid default native header clashing
   useEffect(() => {
@@ -56,22 +74,27 @@ export default function CategoryScreen({ route, navigation }) {
       <FlatList
         data={items}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ItemCard item={item} />}
+        renderItem={({ item }) => (
+            <View className="mb-6">
+                {/* User wants the Title ON TOP of the card, just like categories */}
+                <Text className="text-center font-bold text-gray-200 mb-3 tracking-wider text-xs uppercase">
+                    {item.title}
+                </Text>
+                
+                <ItemCard item={item} />
+            </View>
+        )}
         contentContainerStyle={{ padding: 20, paddingTop: 100 }}
         ListHeaderComponent={() => (
             <View className="items-center mb-10">
-                 <View className="w-24 h-24 rounded-full overflow-hidden mb-4 border-4 border-white/20 shadow-xl">
-                    <Image 
-                        source={{ uri: 'https://ui-avatars.com/api/?name=' + categoryName.replace(' ', '+') + '&background=random&size=256' }} 
-                        className="w-full h-full"
-                        resizeMode="cover"
-                    />
+                 <View className="w-24 h-24 rounded-full overflow-hidden mb-4 border-4 border-white/20 shadow-xl items-center justify-center bg-white/10">
+                    <MaterialCommunityIcons name={iconName} size={48} color={color} />
                  </View>
                  <Text className="text-2xl font-bold text-white mb-2 text-center uppercase tracking-wide">
                     {categoryName}
                  </Text>
                  <Text className="text-sm text-gray-200 text-center px-4 leading-relaxed">
-                    Meditaciones y recursos para recibir el sábado en familia.
+                    {categoryDescription || 'Recursos disponibles.'}
                  </Text>
                  
                  <View className="w-full mt-8 mb-2 border-b border-white/20 pb-2">

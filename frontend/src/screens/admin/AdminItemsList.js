@@ -54,7 +54,7 @@ export default function AdminItemsList({ navigation, route }) {
                     style: 'destructive',
                     onPress: async () => {
                         try {
-                            await client.delete(`/items/${id}`);
+                            await client.delete(`/admin/items/${id}`);
                             fetchItems();
                         } catch (error) {
                             Alert.alert('Error', 'No se pudo eliminar el ítem');

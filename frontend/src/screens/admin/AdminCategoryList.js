@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, FlatList, ActivityIndicator, Alert, TouchableOpacity, Text, Platform } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import client from '../../api/client';
 import Colors from '../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,9 +9,11 @@ export default function AdminCategoryList({ navigation }) {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchCategories();
-    }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchCategories();
+        }, [])
+    );
 
     const fetchCategories = async () => {
         try {
@@ -34,7 +37,7 @@ export default function AdminCategoryList({ navigation }) {
                     style: 'destructive',
                     onPress: async () => {
                         try {
-                            await client.delete(`/categories/${id}`);
+                            await client.delete(`/admin/categories/${id}`);
                             fetchCategories();
                         } catch (error) {
                             Alert.alert('Error', 'No se pudo eliminar la categoría');

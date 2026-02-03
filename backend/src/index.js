@@ -14,9 +14,14 @@ app.use(express.json());
 
 app.get("/", (req, res) => res.json({ ok: true, name: "repomovil-api" }));
 
+// Static files
+const path = require("path");
+app.use("/uploads", express.static(path.join(__dirname, "../public/uploads")));
+
 app.use("/api", publicRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/upload", require("./routes/upload.routes"));
 
 const port = Number(process.env.PORT || 4000);
 

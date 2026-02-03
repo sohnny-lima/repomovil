@@ -25,6 +25,8 @@ model Category {
   id          String   @id @default(cuid())
   name        String
   description String?
+  iconKey     String?
+  iconColor   String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   items       Item[]
@@ -39,6 +41,19 @@ model Item {
   title       String
   url         String
   description String?
+  iconKey     String?
+  iconColor   String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model HeroSlide {
+  id          String   @id @default(cuid())
+  title       String?
+  subtitle    String?
+  imageUrl    String
+  linkUrl     String?
+  order       Int      @default(0)
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
 }
