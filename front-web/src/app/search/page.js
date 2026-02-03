@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Search, ExternalLink, Copy, Check, FileText, Youtube } from 'lucide-react';
@@ -11,6 +11,26 @@ import { searchItems } from '@/lib/api';
 import { getIcon } from '@/lib/iconMap';
 
 export default function SearchPage() {
+  return (
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
+      <PublicNavbar />
+      
+      <main className="flex-1">
+        <Suspense fallback={
+          <div className="w-full h-96 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        }>
+          <SearchContent />
+        </Suspense>
+      </main>
+      
+      <PublicFooter />
+    </div>
+  );
+}
+
+function SearchContent() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
   
@@ -64,10 +84,7 @@ export default function SearchPage() {
   };
   
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
-      <PublicNavbar />
-      
-      <main className="flex-1">
+    <>
         {/* Search Header */}
         <div className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-800 py-12">
           <div className="w-full max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8">
@@ -193,9 +210,6 @@ export default function SearchPage() {
             </>
           )}
         </div>
-      </main>
-      
-      <PublicFooter />
-    </div>
+    </>
   );
 }

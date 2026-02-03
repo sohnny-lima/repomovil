@@ -1,26 +1,53 @@
 # Repomovil - Frontend Web
 
-Frontend web moderno y profesional para Repomovil, construido con Next.js, React y Tailwind CSS.
+> **Aplicación web moderna con sitio público y panel de administración**
+
+Frontend web profesional construido con Next.js, React y Tailwind CSS para el sistema Repomovil.
+
+---
+
+## 📋 Descripción
+
+Aplicación web completa que incluye:
+
+- **Sitio Público**: Home con hero carousel, catálogo de categorías, búsqueda de recursos
+- **Panel de Administración**: Dashboard, CRUD de categorías, items y hero carousel
+
+---
 
 ## 🚀 Características
 
-- **Sitio Público**:
-  - Home con hero section, búsqueda y estadísticas
-  - Catálogo de categorías con filtros
-  - Detalle de categoría con items organizados
-  - Búsqueda global de recursos
+### Sitio Público
 
-- **Panel de Administración**:
-  - Dashboard con KPIs
-  - CRUD completo de categorías
-  - CRUD completo de items
-  - Autenticación con JWT
-  - UI moderna y responsive
+- ✅ **Home**: Hero carousel dinámico, búsqueda rápida, categorías destacadas
+- ✅ **Catálogo de Categorías**: Grid responsive con iconos y colores personalizables
+- ✅ **Detalle de Categoría**: Lista completa de items organizados
+- ✅ **Búsqueda Global**: Búsqueda en tiempo real con resultados filtrados
+- ✅ **Diseño Responsive**: Optimizado para desktop, tablet y móvil
+- ✅ **Dark Mode**: Soporte completo de tema oscuro
 
-## 📋 Requisitos Previos
+### Panel de Administración
 
-- Node.js 18+ y npm
-- Backend de Repomovil corriendo (ver `../backend/README.md`)
+- ✅ **Dashboard**: KPIs y estadísticas del sistema
+- ✅ **Gestión de Categorías**: Crear, editar, eliminar con preview en vivo
+- ✅ **Gestión de Items**: CRUD completo con detección automática de tipo
+- ✅ **Gestión de Hero**: Administrar slides del carousel principal
+- ✅ **Autenticación JWT**: Login seguro con persistencia de sesión
+- ✅ **UI Moderna**: Interfaz profesional con Tailwind CSS
+
+---
+
+## 🛠️ Stack Tecnológico
+
+- **Framework**: Next.js 16.1.6 (App Router)
+- **UI Library**: React 19.2.3
+- **Estilos**: Tailwind CSS v4
+- **HTTP Client**: Axios v1.13.4
+- **Validación**: Zod v4.3.6
+- **Iconos**: Lucide React v0.563.0
+- **Utilidades**: clsx v2.1.1
+
+---
 
 ## ⚙️ Instalación
 
@@ -33,77 +60,147 @@ cp .env.local.example .env.local
 # Editar .env.local con la URL del backend
 ```
 
+---
+
 ## 🔧 Variables de Entorno
 
-Crear archivo `.env.local` con:
+Crear archivo `.env.local` en la raíz del proyecto:
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=http://192.168.100.10:4000
 ```
 
-**Importante**: Cambiar la IP por la de tu máquina donde corre el backend.
+**Importante**:
+
+- Cambiar la IP por la de tu servidor backend
+- En producción, usar la URL completa del backend (ej: `https://api.repomovil.com`)
+- El prefijo `NEXT_PUBLIC_` es necesario para que la variable esté disponible en el cliente
+
+---
 
 ## 🏃 Comandos
 
 ```bash
 # Desarrollo
-npm run dev
+npm run dev          # Inicia servidor en http://localhost:3000
 
-# Build para producción
-npm run build
-
-# Iniciar producción
-npm start
+# Producción
+npm run build        # Genera build optimizado
+npm start            # Inicia servidor de producción
 
 # Linting
-npm run lint
+npm run lint         # Ejecutar ESLint
 ```
+
+---
 
 ## 📁 Estructura del Proyecto
 
 ```
 front-web/
 ├── src/
-│   ├── app/                    # App Router de Next.js
-│   │   ├── page.js            # Home pública
-│   │   ├── categories/        # Páginas de categorías
-│   │   ├── search/            # Búsqueda
-│   │   └── admin/             # Panel admin
+│   ├── app/                      # App Router de Next.js
+│   │   ├── page.js              # Home pública
+│   │   ├── layout.js            # Layout raíz
+│   │   ├── globals.css          # Estilos globales
+│   │   ├── categories/          # Páginas de categorías
+│   │   │   ├── page.js          # Lista de categorías
+│   │   │   └── [id]/            # Detalle de categoría
+│   │   ├── search/              # Búsqueda
+│   │   │   └── page.js
+│   │   └── admin/               # Panel de administración
+│   │       ├── page.js          # Dashboard
+│   │       ├── login/           # Login
+│   │       ├── categories/      # CRUD categorías
+│   │       └── hero/            # CRUD hero carousel
 │   ├── components/
-│   │   ├── ui/                # Componentes UI base
-│   │   └── layout/            # Layouts (navbar, footer, sidebar)
+│   │   ├── ui/                  # Componentes UI base
+│   │   │   ├── Badge.jsx
+│   │   │   ├── Button.jsx
+│   │   │   └── Card.jsx
+│   │   ├── layout/              # Layouts
+│   │   │   ├── PublicNavbar.jsx
+│   │   │   ├── PublicFooter.jsx
+│   │   │   └── AdminSidebar.jsx
+│   │   ├── home/                # Componentes del home
+│   │   │   ├── HeroCarousel.jsx
+│   │   │   └── SearchBar.jsx
+│   │   └── admin/               # Componentes admin
+│   │       ├── CategoryForm.jsx
+│   │       └── ItemForm.jsx
+│   ├── context/
+│   │   └── AuthContext.jsx      # Contexto de autenticación
 │   └── lib/
-│       ├── http.js            # Cliente Axios
-│       ├── auth.js            # Helpers de autenticación
-│       ├── api.js             # Funciones de API
-│       └── iconMap.js         # Mapeo de iconos
-├── .env.local                 # Variables de entorno
+│       ├── http.js              # Cliente Axios configurado
+│       ├── auth.js              # Helpers de autenticación
+│       ├── api.js               # Funciones de API
+│       └── iconMap.js           # Mapeo de iconos
+├── public/                       # Archivos estáticos
+│   ├── favicon.ico
+│   └── images/
+├── .env.local                    # Variables de entorno
+├── .env.local.example            # Ejemplo de variables
+├── next.config.mjs               # Configuración de Next.js
+├── tailwind.config.js            # Configuración de Tailwind
 └── package.json
 ```
+
+---
 
 ## 🌐 Rutas Principales
 
 ### Públicas
 
-- `/` - Home
-- `/categories` - Catálogo de categorías
-- `/categories/[id]` - Detalle de categoría
-- `/search` - Búsqueda global
+| Ruta               | Descripción                          |
+| ------------------ | ------------------------------------ |
+| `/`                | Home con hero, búsqueda y categorías |
+| `/categories`      | Catálogo completo de categorías      |
+| `/categories/[id]` | Detalle de categoría con sus items   |
+| `/search`          | Búsqueda global de recursos          |
 
 ### Admin (requiere autenticación)
 
-- `/admin/login` - Login
-- `/admin` - Dashboard
-- `/admin/categories` - Lista de categorías
-- `/admin/categories/new` - Crear categoría
-- `/admin/categories/[id]/edit` - Editar categoría
-- `/admin/categories/[id]/items` - Items de categoría
-- `/admin/categories/[id]/items/new` - Crear item
-- `/admin/categories/[id]/items/[itemId]/edit` - Editar item
+| Ruta                                         | Descripción                |
+| -------------------------------------------- | -------------------------- |
+| `/admin/login`                               | Login de administrador     |
+| `/admin`                                     | Dashboard con estadísticas |
+| `/admin/categories`                          | Lista de categorías        |
+| `/admin/categories/new`                      | Crear nueva categoría      |
+| `/admin/categories/[id]/edit`                | Editar categoría           |
+| `/admin/categories/[id]/items`               | Items de una categoría     |
+| `/admin/categories/[id]/items/new`           | Crear nuevo item           |
+| `/admin/categories/[id]/items/[itemId]/edit` | Editar item                |
+| `/admin/hero`                                | Gestión de hero carousel   |
+
+---
 
 ## 🔌 Integración con Backend
 
-Este frontend consume la API del backend ubicado en `../backend/`.
+Este frontend consume la API REST del backend ubicado en `../backend/`.
+
+### Configuración de Axios
+
+El cliente HTTP está configurado en `src/lib/http.js`:
+
+```javascript
+import axios from "axios";
+
+const http = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Interceptor para agregar token JWT
+http.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+```
 
 ### Endpoints Utilizados
 
@@ -112,6 +209,7 @@ Este frontend consume la API del backend ubicado en `../backend/`.
 - `GET /api/categories` - Lista categorías activas
 - `GET /api/categories/:id/items` - Items de una categoría
 - `GET /api/search?q=...` - Búsqueda de items
+- `GET /api/hero` - Slides del hero carousel
 
 **Autenticación**:
 
@@ -125,76 +223,194 @@ Este frontend consume la API del backend ubicado en `../backend/`.
 - `POST /api/admin/items` - Crear item
 - `PUT /api/admin/items/:id` - Actualizar item
 - `DELETE /api/admin/items/:id` - Eliminar item
+- `POST /api/admin/hero` - Crear slide
+- `PUT /api/admin/hero/:id` - Actualizar slide
+- `DELETE /api/admin/hero/:id` - Eliminar slide
 
-### Cambiar Prefijos de API
-
-Si el backend cambia el prefijo `/api`, actualizar en:
-
-- `src/lib/api.js` - Todas las rutas de funciones
+---
 
 ## 🔐 Autenticación
 
-El sistema usa JWT Bearer tokens:
+El sistema usa JWT Bearer tokens almacenados en `localStorage`:
 
-1. Login en `/admin/login` con credenciales
-2. Token se guarda en `localStorage`
-3. Axios interceptor agrega automáticamente el token a requests
-4. Si token expira (401), redirige a login
+### Flujo de Autenticación
 
-**Credenciales por defecto**:
+1. Usuario ingresa credenciales en `/admin/login`
+2. Backend valida y devuelve token JWT
+3. Token se guarda en `localStorage`
+4. Axios interceptor agrega automáticamente el token a todas las requests
+5. Si token expira (401), se redirige a login
 
-- Email: `admin@repomovil.com`
-- Password: `Admin12345`
+### Protección de Rutas
 
-## 🎨 Tecnologías
+Las rutas admin están protegidas con el contexto `AuthContext`:
 
-- **Framework**: Next.js 15 (App Router)
-- **UI**: React 19
-- **Estilos**: Tailwind CSS
-- **HTTP Client**: Axios
-- **Validación**: Zod
-- **Iconos**: Lucide React
-- **Utilidades**: clsx
+```javascript
+"use client";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
+export default function AdminLayout({ children }) {
+  const { isAuthenticated, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.push("/admin/login");
+    }
+  }, [isAuthenticated, loading, router]);
+
+  if (loading) return <div>Cargando...</div>;
+  if (!isAuthenticated) return null;
+
+  return <>{children}</>;
+}
+```
+
+### Credenciales por Defecto
+
+- **Email**: `admin@repomovil.com`
+- **Password**: `Admin12345`
+
+> ⚠️ Cambiar en producción
+
+---
+
+## 🎨 Personalización
+
+### Iconos Disponibles
+
+El sistema soporta los siguientes iconos (configurables por categoría/item):
+
+- `book`, `video`, `file-text`, `music`, `image`, `folder`, `star`, `heart`, `users`, `settings`
+
+Mapeo en `src/lib/iconMap.js`:
+
+```javascript
+import {
+  Book,
+  Video,
+  FileText,
+  Music,
+  Image,
+  Folder,
+  Star,
+  Heart,
+  Users,
+  Settings,
+} from "lucide-react";
+
+export const getIcon = (iconKey) => {
+  const iconMap = {
+    book: Book,
+    video: Video,
+    "file-text": FileText,
+    music: Music,
+    image: Image,
+    folder: Folder,
+    star: Star,
+    heart: Heart,
+    users: Users,
+    settings: Settings,
+  };
+  return iconMap[iconKey] || FileText;
+};
+```
+
+### Colores
+
+Los colores se pueden personalizar usando códigos hex (ej: `#3b82f6`).
+
+---
+
+## 🚀 Despliegue
+
+### Build de Producción
+
+```bash
+# 1. Configurar variables de entorno de producción
+# Editar .env.local con URL del backend en producción
+
+# 2. Generar build
+npm run build
+
+# 3. Iniciar servidor
+npm start
+```
+
+### Opciones de Despliegue
+
+- **Vercel** (recomendado para Next.js)
+- **Netlify**
+- **Docker** + servidor Node.js
+- **VPS** con PM2
+
+### Variables de Entorno en Producción
+
+Configurar en el servicio de hosting:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=https://api.repomovil.com
+```
+
+---
 
 ## 🐛 Troubleshooting
 
 ### Error de conexión al backend
 
-Verificar que:
+**Síntomas**: "Network Error" o "Failed to fetch"
 
-1. El backend esté corriendo en el puerto configurado
-2. La variable `NEXT_PUBLIC_API_BASE_URL` apunte a la IP correcta
-3. No haya firewall bloqueando la conexión
+**Soluciones**:
+
+1. Verificar que backend esté corriendo
+2. Verificar `NEXT_PUBLIC_API_BASE_URL` en `.env.local`
+3. Revisar CORS en backend
+4. Verificar firewall/antivirus
 
 ### Error 401 en admin
 
-El token expiró o es inválido. Hacer logout y login nuevamente.
+**Síntomas**: Redirige a login constantemente
+
+**Soluciones**:
+
+1. Token expiró - hacer logout y login nuevamente
+2. Verificar que `JWT_SECRET` sea el mismo en backend
+3. Limpiar `localStorage` del navegador
 
 ### Categorías no aparecen
 
-Verificar que el backend tenga categorías con `isActive: true`.
+**Síntomas**: Lista vacía en home o categorías
+
+**Soluciones**:
+
+1. Verificar que backend tenga categorías con `isActive: true`
+2. Revisar consola del navegador para errores
+3. Verificar que backend esté respondiendo correctamente
+
+### Build falla
+
+**Síntomas**: Error al ejecutar `npm run build`
+
+**Soluciones**:
+
+1. Verificar que todas las variables de entorno estén configuradas
+2. Limpiar caché: `rm -rf .next`
+3. Reinstalar dependencias: `rm -rf node_modules && npm install`
+
+---
 
 ## 📝 Notas Importantes
 
 - El frontend solo muestra categorías e items con `isActive: true` en el sitio público
-- El panel admin usa el mismo endpoint público para listar categorías (no hay endpoint admin específico)
-- Las imágenes de preview de iconos se generan dinámicamente con colores personalizables
-- La detección automática de tipo de URL (YouTube, Drive, etc.) se hace en el backend
+- El panel admin muestra todos los registros independientemente del estado
+- Las imágenes del hero carousel deben subirse al backend primero
+- La detección automática de tipo de URL se hace en el backend
+- El sistema soporta dark mode automático basado en preferencias del sistema
 
-## 🚀 Despliegue
-
-Para producción:
-
-```bash
-# Build
-npm run build
-
-# Iniciar
-npm start
-```
-
-Configurar `NEXT_PUBLIC_API_BASE_URL` con la URL del backend en producción.
+---
 
 ## 📄 Licencia
 
-Parte del proyecto Repomovil - Mayordomía 2026
+Parte del proyecto Repomovil - Mayordomía 2026 - Unión Peruana del Sur
