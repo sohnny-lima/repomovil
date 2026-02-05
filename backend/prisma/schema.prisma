@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
 }
 
 enum ItemType {
@@ -39,7 +39,7 @@ model Item {
 
   type        ItemType @default(OTHER)
   title       String
-  url         String
+  url         String @db.Text
   description String?
   iconKey     String?
   iconColor   String?
@@ -51,8 +51,8 @@ model HeroSlide {
   id          String   @id @default(cuid())
   title       String?
   subtitle    String?
-  imageUrl    String
-  linkUrl     String?
+  imageUrl    String @db.Text
+  linkUrl     String? @db.Text
   order       Int      @default(0)
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
