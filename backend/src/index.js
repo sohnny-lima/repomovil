@@ -8,8 +8,11 @@ const adminRoutes = require("./routes/admin.routes");
 
 const app = express();
 
-// ✅ CORS (por ahora abierto, luego lo cerramos si quieres)
+// Demo rápido (abierto):
 app.use(cors());
+
+// Si quieres cerrar a Vercel, reemplaza por el bloque de allowedOrigins de arriba.
+
 app.use(express.json());
 
 app.get("/", (req, res) => res.json({ ok: true, name: "repomovil-api" }));
@@ -25,9 +28,7 @@ app.use("/api/upload", require("./routes/upload.routes"));
 
 const port = Number(process.env.PORT || 4000);
 
-// ✅ IMPORTANTE: escuchar en 0.0.0.0 para que sea accesible desde tu celular por LAN
-app.listen(port, "0.0.0.0", () => {
-  console.log(`✅ API running:`);
-  console.log(`   - Local: http://localhost:${port}`);
-  console.log(`   - LAN:   http://192.168.100.10:${port}`);
+// ✅ Listen (Render asigna el host automáticamente)
+app.listen(port, () => {
+  console.log(`✅ API running on port ${port}`);
 });
