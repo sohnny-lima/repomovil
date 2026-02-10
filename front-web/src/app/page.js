@@ -46,17 +46,17 @@ export default function Home() {
       
       <main className="flex-1 w-full max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
         
-        {/* Section 1: Ministerios (Categories) - Horizontal Scroll */}
-        <section className="space-y-8">
+        {/* Section 1: Ministerios (Categories) - Linktree Style */}
+        <section>
           <div className="flex items-center space-x-4 mb-4">
             <div className="h-10 w-2 bg-green-500 rounded-full"></div>
             <h2 className="text-gray-900 dark:text-white text-3xl font-bold tracking-wide uppercase">MINISTERIOS</h2>
           </div>
 
           {loading ? (
-             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+             <div className="space-y-16 max-w-2xl mx-auto">
                {[1, 2, 3, 4].map(i => (
-                 <div key={i} className="aspect-square bg-gray-200 dark:bg-slate-900 rounded-2xl animate-pulse"></div>
+                 <div key={i} className="h-20 bg-gray-200 dark:bg-slate-900 rounded-2xl animate-pulse"></div>
                ))}
              </div>
           ) : categories.length === 0 ? (
@@ -64,33 +64,51 @@ export default function Home() {
               <p className="text-gray-500 dark:text-gray-400 text-lg">No hay ministerios disponibles</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="max-w-2xl mx-auto">
               {categories.map((cat) => {
                 const Icon = getIcon(cat.iconKey);
                 return (
                   <Link key={cat.id} href={`/categories/${cat.id}`}>
-                    <div className="group aspect-square bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-slate-800 transition-all duration-300 rounded-3xl p-3 sm:p-5 md:p-8 flex flex-col items-center justify-center border border-gray-100 dark:border-transparent hover:border-green-200 dark:hover:border-green-500/30 shadow-sm hover:shadow-xl dark:shadow-none relative overflow-hidden text-center h-full">
-                      {/* Glow effect on hover (dark mode) */}
-                      <div className="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity dark:block hidden pointer-events-none"></div>
-                      <div className="absolute top-0 right-0 p-3 sm:p-4 md:p-6 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-4 group-hover:translate-x-0 duration-300">
-                        <ChevronRight className="text-gray-400 dark:text-green-500 w-5 h-5 md:w-6 md:h-6" />
-                      </div>
+                    <div className="mb-6 group relative bg-gradient-to-br from-white to-gray-50/50 dark:from-slate-900 dark:to-slate-800/50 hover:from-green-50 hover:to-white dark:hover:from-slate-800 dark:hover:to-slate-700 transition-all duration-500 rounded-3xl p-6 flex items-center gap-5 border border-gray-200/60 dark:border-gray-700/50 hover:border-green-400/60 dark:hover:border-green-500/60 shadow-lg shadow-gray-200/50 dark:shadow-none hover:shadow-xl hover:shadow-green-200/30 dark:hover:shadow-green-900/20 cursor-pointer overflow-hidden backdrop-blur-sm hover:-translate-y-1">
                       
-                      <div className="relative z-10 mb-3 sm:mb-4 md:mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                        <div className={`w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center shadow-lg dark:shadow-green-900/20`} 
-                             style={{ backgroundColor: cat.iconColor ? `${cat.iconColor}20` : '#22c55e20' }}>
-                          <Icon size={24} className="sm:w-8 sm:h-8 md:w-10 md:h-10" style={{ color: cat.iconColor || '#22c55e' }} />
+                      {/* Gradient overlay on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-green-500/5 to-green-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                      
+                      {/* Icon */}
+                      <div className="relative flex-shrink-0 z-10">
+                        <div 
+                          className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg shadow-gray-300/40 dark:shadow-black/40 group-hover:shadow-xl group-hover:shadow-green-500/30 dark:group-hover:shadow-green-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 backdrop-blur-sm" 
+                          style={{ 
+                            background: cat.iconColor 
+                              ? `linear-gradient(135deg, ${cat.iconColor}15, ${cat.iconColor}30)` 
+                              : 'linear-gradient(135deg, #22c55e15, #22c55e30)'
+                          }}
+                        >
+                          <Icon size={32} style={{ color: cat.iconColor || '#22c55e' }} className="group-hover:scale-110 transition-transform duration-300" />
                         </div>
                       </div>
                       
-                      <div className="relative z-10 w-full px-1">
-                        <h3 className="text-gray-900 dark:text-white font-bold text-sm sm:text-xl md:text-2xl mb-1 sm:mb-2 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors line-clamp-2 leading-tight">
+                      {/* Content */}
+                      <div className="relative flex-1 min-w-0 z-10">
+                        <h3 className="text-gray-900 dark:text-white font-bold text-xl group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-300 truncate mb-1">
                           {cat.name}
                         </h3>
-                        <p className="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs md:text-sm font-semibold uppercase tracking-wider">
-                          {cat.items?.length || 0} Recursos
+                        <p className="text-gray-500 dark:text-gray-400 text-sm font-semibold flex items-center gap-2">
+                          <span className="inline-block w-2 h-2 rounded-full bg-green-500 group-hover:animate-pulse"></span>
+                          {cat.items?.length || 0} Recursos disponibles
                         </p>
                       </div>
+                      
+                      {/* Arrow with background */}
+                      <div className="relative flex-shrink-0 z-10">
+                        <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-slate-800 group-hover:bg-green-500 dark:group-hover:bg-green-500 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+                          <ChevronRight 
+                            className="text-gray-400 dark:text-gray-500 group-hover:text-white group-hover:translate-x-0.5 transition-all duration-300" 
+                            size={20} 
+                          />
+                        </div>
+                      </div>
+                      
                     </div>
                   </Link>
                 );
