@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Plus, Edit, Trash2, Save, X, Image as ImageIcon, Upload } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Card, { CardBody } from '@/components/ui/Card';
 import { getHeroSlides, createHeroSlide, updateHeroSlide, deleteHeroSlide, uploadFile } from '@/lib/api';
+import { BRANDING } from '@/lib/constants';
 
 export default function AdminHeroPage() {
   const [slides, setSlides] = useState([]);
@@ -132,7 +134,7 @@ export default function AdminHeroPage() {
                   label="Subtítulo"
                   value={formData.subtitle}
                   onChange={(e) => setFormData({...formData, subtitle: e.target.value})}
-                  placeholder="Ej: Unión Peruana del Sur"
+                  placeholder={BRANDING.PLACEHOLDER_SUBTITLE}
                 />
               </div>
 
@@ -210,8 +212,15 @@ export default function AdminHeroPage() {
               {formData.imageUrl && (
                 <div className="p-2 bg-gray-50 rounded-lg border border-gray-200 inline-block">
                   <span className="text-xs text-gray-500 mb-1 block">Vista Previa:</span>
-                  <img src={formData.imageUrl} alt="Preview" className="h-32 object-cover rounded" 
-                       onError={(e) => e.target.style.display = 'none'} />
+                  <div className="relative h-32 w-48">
+                    <Image 
+                      src={formData.imageUrl} 
+                      alt="Preview" 
+                      fill
+                      className="object-cover rounded" 
+                      unoptimized
+                    />
+                  </div>
                 </div>
               )}
 
@@ -242,10 +251,12 @@ export default function AdminHeroPage() {
             <div key={slide.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col md:flex-row items-center gap-6">
               {/* Image Thumbnail */}
               <div className="w-full md:w-48 h-32 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden relative">
-                <img 
+                <Image 
                   src={slide.imageUrl} 
                   alt={slide.title} 
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  unoptimized
                 />
                 {!slide.isActive && (
                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">

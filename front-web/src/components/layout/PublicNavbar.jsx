@@ -7,6 +7,7 @@ import { Search, Menu, X, Sun, Moon } from 'lucide-react';
 import { useState } from 'react';
 import clsx from 'clsx';
 import { useTheme } from '@/context/ThemeContext';
+import { BRANDING } from '@/lib/constants';
 
 export default function PublicNavbar() {
   const pathname = usePathname();
@@ -35,8 +36,8 @@ export default function PublicNavbar() {
               />
             </div>
             <div className="flex flex-col">
-              <span className="text-3xl font-bold text-white leading-none">Mayordomía 2026</span>
-              <span className="text-sm text-green-500 font-medium tracking-wide">UNIÓN PERUANA DEL SUR</span>
+              <span className="text-3xl font-bold text-white leading-none">{BRANDING.PROGRAM_NAME_SHORT}</span>
+              <span className="text-sm text-green-500 font-medium tracking-wide">{BRANDING.ORGANIZATION_NAME.toUpperCase()}</span>
             </div>
           </div>
           

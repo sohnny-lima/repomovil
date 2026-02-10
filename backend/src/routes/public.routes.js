@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const prisma = require("../prisma");
+const { toPublicUrl } = require("../utils/urlHelper");
 
 // GET /api/search?q=...
 // GET /api/search?q=...
@@ -107,7 +108,15 @@ router.get("/hero", async (req, res) => {
     where: { isActive: true },
     orderBy: { order: "asc" },
   });
-  res.json(slides);
+  
+  // Construir URLs públicas completas
+  const slidesWithUrls = slides.map(slide => ({
+    ...slide,
+    imageUrl: toPublicUrl(slide.imageUrl),
+    linkUrl: slide.linkUrl, // linkUrl es externo, no necesita transformación
+  }));
+  
+  res.json(slidesWithUrls);
 });
 
 module.exports = router;

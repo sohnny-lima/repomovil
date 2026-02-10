@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Github, Mail, Facebook, Instagram, Youtube } from 'lucide-react';
+import { BRANDING } from '@/lib/constants';
 
 export default function PublicFooter() {
   const currentYear = new Date().getFullYear();
@@ -10,7 +11,7 @@ export default function PublicFooter() {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
             <span className="text-base text-gray-500 dark:text-gray-400">
-              © {currentYear} Mayordomía Cristiana - Unión Peruana del Sur
+              © {currentYear} {BRANDING.COPYRIGHT}
             </span>
           </div>
           

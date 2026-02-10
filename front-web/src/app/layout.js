@@ -1,11 +1,12 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from "@/context/ThemeContext";
+import { BRANDING } from '@/lib/constants';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Repomovil - Recursos para Mayordomía',
+  title: BRANDING.SITE_TITLE,
   description: 'Plataforma de gestión de recursos educativos',
 };
 

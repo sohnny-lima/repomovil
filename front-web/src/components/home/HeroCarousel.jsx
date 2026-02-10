@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import { getHeroSlides } from '@/lib/api';
+import { BRANDING } from '@/lib/constants';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
 
@@ -20,12 +21,12 @@ const DEFAULT_SLIDES = [
   {
     id: 'default-1',
     imageUrl: '/imagenes/imagen 1.webp',
-    title: 'Bienvenidos a Mayordomía',
-    subtitle: 'Unión Peruana del Sur',
+    title: BRANDING.HERO_WELCOME,
+    subtitle: BRANDING.ORGANIZATION_NAME,
     linkUrl: '#'
   },
   {
-    id: 'default-2', // Fixed typo in id
+    id: 'default-2',
     imageUrl: '/imagenes/imagen 2.webp',
     title: 'Recursos para el Crecimiento',
     subtitle: 'Fortaleciendo la fe y el compromiso',
