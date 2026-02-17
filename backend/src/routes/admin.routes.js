@@ -22,6 +22,7 @@ const categorySchema = z.object({
   description: z.string().optional().nullable(),
   iconKey: z.string().optional().nullable(),
   iconColor: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(), // Agregado para soporte de imágenes
   isActive: z.boolean().optional(),
 });
 
@@ -127,7 +128,7 @@ router.post("/hero", async (req, res) => {
   if (!parsed.success)
     return res.status(422).json({ ok: false, errors: parsed.error.flatten() });
 
-  const created = await prisma.heroSlide.create({ data: parsed.data });
+  const created = await prisma.heroslide.create({ data: parsed.data });
   res.json({ ok: true, data: created });
 });
 
@@ -137,7 +138,7 @@ router.put("/hero/:id", async (req, res) => {
   if (!parsed.success)
     return res.status(422).json({ ok: false, errors: parsed.error.flatten() });
 
-  const updated = await prisma.heroSlide.update({
+  const updated = await prisma.heroslide.update({
     where: { id },
     data: parsed.data,
   });
@@ -146,7 +147,7 @@ router.put("/hero/:id", async (req, res) => {
 
 router.delete("/hero/:id", async (req, res) => {
   const { id } = req.params;
-  await prisma.heroSlide.delete({ where: { id } });
+  await prisma.heroslide.delete({ where: { id } });
   res.json({ ok: true });
 });
 

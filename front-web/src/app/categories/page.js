@@ -106,29 +106,39 @@ export default function CategoriesPage() {
               <p className="text-gray-500 dark:text-gray-400 text-lg">No se encontraron categorías que coincidan con tu búsqueda.</p>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div>
               {filteredCategories.map((category) => {
                 const Icon = getIcon(category.iconKey);
                 
                 return (
                   <Link key={category.id} href={`/categories/${category.id}`}>
-                    <div className="group relative bg-gradient-to-br from-white to-gray-50/50 dark:from-slate-900 dark:to-slate-800/50 hover:from-green-50 hover:to-white dark:hover:from-slate-800 dark:hover:to-slate-700 transition-all duration-500 rounded-3xl p-6 flex items-center gap-5 border border-gray-200/60 dark:border-gray-700/50 hover:border-green-400/60 dark:hover:border-green-500/60 shadow-lg shadow-gray-200/50 dark:shadow-none hover:shadow-xl hover:shadow-green-200/30 dark:hover:shadow-green-900/20 cursor-pointer overflow-hidden backdrop-blur-sm hover:-translate-y-1">
+                    <div className="mb-6 group relative bg-gradient-to-br from-white to-gray-50/50 dark:from-slate-900 dark:to-slate-800/50 hover:from-green-50 hover:to-white dark:hover:from-slate-800 dark:hover:to-slate-700 transition-all duration-500 rounded-3xl p-6 flex items-center gap-5 border border-gray-200/60 dark:border-gray-700/50 hover:border-green-400/60 dark:hover:border-green-500/60 shadow-lg shadow-gray-200/50 dark:shadow-none hover:shadow-xl hover:shadow-green-200/30 dark:hover:shadow-green-900/20 cursor-pointer overflow-hidden backdrop-blur-sm hover:-translate-y-1">
                       
                       {/* Gradient overlay on hover */}
                       <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-green-500/5 to-green-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                       
-                      {/* Icon */}
+                      {/* Icon or Image */}
                       <div className="relative flex-shrink-0 z-10">
-                        <div 
-                          className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg shadow-gray-300/40 dark:shadow-black/40 group-hover:shadow-xl group-hover:shadow-green-500/30 dark:group-hover:shadow-green-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 backdrop-blur-sm" 
-                          style={{ 
-                            background: category.iconColor 
-                              ? `linear-gradient(135deg, ${category.iconColor}15, ${category.iconColor}30)` 
-                              : 'linear-gradient(135deg, #22c55e15, #22c55e30)'
-                          }}
-                        >
-                          <Icon size={32} style={{ color: category.iconColor || '#22c55e' }} className="group-hover:scale-110 transition-transform duration-300" />
-                        </div>
+                        {category.imageUrl ? (
+                          <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-lg shadow-gray-300/40 dark:shadow-black/40 group-hover:shadow-xl group-hover:shadow-green-500/30 dark:group-hover:shadow-green-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                            <img
+                              src={category.imageUrl}
+                              alt={category.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div 
+                            className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg shadow-gray-300/40 dark:shadow-black/40 group-hover:shadow-xl group-hover:shadow-green-500/30 dark:group-hover:shadow-green-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 backdrop-blur-sm" 
+                            style={{ 
+                              background: category.iconColor 
+                                ? `linear-gradient(135deg, ${category.iconColor}15, ${category.iconColor}30)` 
+                                : 'linear-gradient(135deg, #22c55e15, #22c55e30)'
+                            }}
+                          >
+                            <Icon size={32} style={{ color: category.iconColor || '#22c55e' }} className="group-hover:scale-110 transition-transform duration-300" />
+                          </div>
+                        )}
                       </div>
                       
                       {/* Content */}

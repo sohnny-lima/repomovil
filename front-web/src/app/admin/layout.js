@@ -10,23 +10,44 @@ export default function AdminLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  
+  // Only run on client side
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setMounted(true);
+  }, []);
   
   useEffect(() => {
+    if (!mounted) return;
+    
     // Redirect if not authenticated
-    // Skip redirect if we are already on login page to avoid loops
     if (!isAuthenticated() && pathname !== '/admin/login') {
       router.push('/admin/login');
     }
-  }, [router, pathname]);
+  }, [mounted, router, pathname]);
   
   // If we are on the login page, render children directly without admin shell
   if (pathname === '/admin/login') {
     return <>{children}</>;
   }
   
-  // Check auth on client side only
-  if (typeof window === 'undefined' || !isAuthenticated()) {
-    return null;
+  // Show consistent loading state during SSR and initial mount
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-500">Cargando...</div>
+      </div>
+    );
+  }
+  
+  // Check auth only after mounted
+  if (!isAuthenticated()) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-500">Redirigiendo...</div>
+      </div>
+    );
   }
   
   return (

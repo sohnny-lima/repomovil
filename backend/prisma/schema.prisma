@@ -6,54 +6,56 @@ datasource db {
   provider = "mysql"
 }
 
-enum ItemType {
-  YOUTUBE
-  DRIVE
-  ONEDRIVE
-  OTHER
-}
-
-model AdminUser {
+model adminuser {
   id           String   @id @default(cuid())
-  email        String   @unique
+  email        String   @unique(map: "AdminUser_email_key")
   passwordHash String
   role         String   @default("ADMIN")
   createdAt    DateTime @default(now())
 }
 
-model Category {
+model category {
   id          String   @id @default(cuid())
   name        String
   description String?
   iconKey     String?
   iconColor   String?
+  imageUrl    String?  @db.Text
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
-  items       Item[]
+  item        item[]
 }
 
-model Item {
-  id          String   @id @default(cuid())
-  categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+model heroslide {
+  id        String   @id @default(cuid())
+  title     String?
+  subtitle  String?
+  imageUrl  String   @db.Text
+  linkUrl   String?  @db.Text
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
 
-  type        ItemType @default(OTHER)
+model item {
+  id          String    @id @default(cuid())
+  categoryId  String
+  type        item_type @default(OTHER)
   title       String
-  url         String @db.Text
+  url         String    @db.Text
   description String?
   iconKey     String?
   iconColor   String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  category    category  @relation(fields: [categoryId], references: [id], onDelete: Cascade, map: "Item_categoryId_fkey")
+
+  @@index([categoryId], map: "Item_categoryId_fkey")
 }
 
-model HeroSlide {
-  id          String   @id @default(cuid())
-  title       String?
-  subtitle    String?
-  imageUrl    String @db.Text
-  linkUrl     String? @db.Text
-  order       Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
+enum item_type {
+  YOUTUBE
+  DRIVE
+  ONEDRIVE
+  OTHER
 }

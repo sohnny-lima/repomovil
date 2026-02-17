@@ -3,19 +3,18 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Upload, X } from 'lucide-react';
 import Link from 'next/link';
 import Card, { CardBody, CardHeader } from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { createCategory } from '@/lib/api';
-import { getAvailableIcons, getIcon } from '@/lib/iconMap';
+import http from '@/lib/http';
 
 const categorySchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
   description: z.string().optional(),
-  iconKey: z.string().optional(),
-  iconColor: z.string().optional(),
+  imageUrl: z.string().optional(),
   isActive: z.boolean(),
 });
 
@@ -24,12 +23,13 @@ export default function NewCategoryPage() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    iconKey: 'folder',
-    iconColor: '#3b82f6',
+    imageUrl: '',
     isActive: true,
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState('');
   
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -40,6 +40,50 @@ export default function NewCategoryPage() {
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
+  };
+  
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Validar tipo de archivo
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor selecciona una imagen válida');
+      return;
+    }
+    
+    // Validar tamaño (5MB máximo)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('La imagen no debe superar los 5MB');
+      return;
+    }
+    
+    setUploading(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await http.post('/api/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      const imageUrl = response.data.url;
+      setFormData(prev => ({ ...prev, imageUrl }));
+      setImagePreview(URL.createObjectURL(file));
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Error al subir la imagen');
+    } finally {
+      setUploading(false);
+    }
+  };
+  
+  const handleRemoveImage = () => {
+    setFormData(prev => ({ ...prev, imageUrl: '' }));
+    setImagePreview('');
   };
   
   const handleSubmit = async (e) => {
@@ -68,9 +112,6 @@ export default function NewCategoryPage() {
       setLoading(false);
     }
   };
-  
-  const availableIcons = getAvailableIcons();
-  const PreviewIcon = getIcon(formData.iconKey);
   
   return (
     <div className="max-w-3xl mx-auto">
@@ -114,51 +155,78 @@ export default function NewCategoryPage() {
               />
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Icono
-                </label>
-                <select
-                  name="iconKey"
-                  value={formData.iconKey}
-                  onChange={handleChange}
-                  disabled={loading}
-                  className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {availableIcons.map(icon => (
-                    <option key={icon} value={icon}>
-                      {icon}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            {/* Image Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Imagen de la Categoría
+              </label>
+              <p className="text-sm text-gray-500 mb-3">
+                Sube una imagen cuadrada (recomendado: 512x512px). Máximo 5MB.
+              </p>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Color
-                </label>
-                <input
-                  type="color"
-                  name="iconColor"
-                  value={formData.iconColor}
-                  onChange={handleChange}
-                  disabled={loading}
-                  className="block w-full h-10 rounded-lg border border-gray-300 cursor-pointer"
-                />
-              </div>
+              {!imagePreview ? (
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={uploading || loading}
+                    className="hidden"
+                    id="image-upload"
+                  />
+                  <label
+                    htmlFor="image-upload"
+                    className={`flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                      uploading || loading
+                        ? 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                        : 'border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-blue-400'
+                    }`}
+                  >
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <Upload className={`w-12 h-12 mb-3 ${uploading ? 'text-blue-500 animate-pulse' : 'text-gray-400'}`} />
+                      <p className="mb-2 text-sm text-gray-500">
+                        <span className="font-semibold">
+                          {uploading ? 'Subiendo...' : 'Click para subir'}
+                        </span> o arrastra y suelta
+                      </p>
+                      <p className="text-xs text-gray-500">PNG, JPG, WEBP (MAX. 5MB)</p>
+                    </div>
+                  </label>
+                </div>
+              ) : (
+                <div className="relative inline-block">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="w-48 h-48 object-cover rounded-2xl border-2 border-gray-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    disabled={loading}
+                    className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-lg transition-colors"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              )}
             </div>
             
-            {/* Icon Preview */}
+            {/* Preview */}
             <div className="border border-gray-200 rounded-lg p-6 bg-gray-50">
               <p className="text-sm font-medium text-gray-700 mb-3">Vista Previa</p>
               <div className="flex items-center space-x-4">
-                <div
-                  className="p-3 rounded-lg"
-                  style={{ backgroundColor: `${formData.iconColor}20` }}
-                >
-                  <PreviewIcon size={32} style={{ color: formData.iconColor }} />
-                </div>
+                {imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="Preview icon"
+                    className="w-16 h-16 rounded-2xl object-cover shadow-lg"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-2xl bg-gray-200 flex items-center justify-center">
+                    <Upload className="text-gray-400" size={32} />
+                  </div>
+                )}
                 <div>
                   <p className="font-bold text-lg text-gray-900">
                     {formData.name || 'Nombre de la categoría'}
@@ -193,7 +261,7 @@ export default function NewCategoryPage() {
               Cancelar
             </Button>
           </Link>
-          <Button type="submit" loading={loading} disabled={loading}>
+          <Button type="submit" loading={loading} disabled={loading || uploading}>
             Crear Categoría
           </Button>
         </div>

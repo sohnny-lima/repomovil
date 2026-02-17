@@ -53,31 +53,47 @@ router.get("/search", async (req, res) => {
 
 // GET /api/categories
 router.get("/categories", async (req, res) => {
-  const categories = await prisma.category.findMany({
-    where: { isActive: true },
-    orderBy: { createdAt: "desc" },
-    select: { 
-      id: true, 
-      name: true, 
-      description: true, 
-      iconKey: true, 
-      iconColor: true, 
-      createdAt: true,
-      items: {
-        where: { isActive: true },
-        orderBy: { createdAt: "desc" },
-        take: 5, // Limit to 5 per category for home screen? Or all? User said "visualizarlo", let's take 5 for preview or all. Let's take 10 to be safe.
-        select: {
+  try {
+    const categoriesFromDb = await prisma.category.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: "desc" },
+      select: { 
+        id: true, 
+        name: true, 
+        description: true, 
+        iconKey: true, 
+        iconColor: true, 
+        imageUrl: true, // Agregado campo de imagen
+        createdAt: true,
+        // El usuario reportó que la relación se llama 'item' (singular) en su esquema actual
+        item: {
+          where: { isActive: true },
+          orderBy: { createdAt: "desc" },
+          take: 5,
+          select: {
             id: true,
             title: true,
             type: true,
             url: true,
             description: true
+          }
         }
-      }
-    },
-  });
-  res.json(categories);
+      },
+    });
+
+    // Mapear 'item' a 'items' y transformar imageUrl a URL pública completa
+    const categories = categoriesFromDb.map(c => ({
+      ...c,
+      imageUrl: toPublicUrl(c.imageUrl), // Transformar a URL completa
+      items: c.item,
+      item: undefined
+    }));
+
+    res.json(categories);
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    res.status(500).json({ error: "Error fetching categories" });
+  }
 });
 
 // GET /api/categories/:id/items
@@ -104,19 +120,42 @@ router.get("/categories/:id/items", async (req, res) => {
 
 // GET /api/hero
 router.get("/hero", async (req, res) => {
-  const slides = await prisma.heroSlide.findMany({
-    where: { isActive: true },
-    orderBy: { order: "asc" },
-  });
-  
-  // Construir URLs públicas completas
-  const slidesWithUrls = slides.map(slide => ({
-    ...slide,
-    imageUrl: toPublicUrl(slide.imageUrl),
-    linkUrl: slide.linkUrl, // linkUrl es externo, no necesita transformación
-  }));
-  
-  res.json(slidesWithUrls);
+  try {
+    // El usuario reportó que el modelo se accede como 'heroslide' (minúscula)
+    const slides = await prisma.heroslide.findMany({
+      where: { isActive: true },
+      orderBy: { order: "asc" },
+    });
+    
+    // Construir URLs públicas completas
+    const slidesWithUrls = slides.map(slide => ({
+      ...slide,
+      imageUrl: toPublicUrl(slide.imageUrl),
+      linkUrl: slide.linkUrl, 
+    }));
+    
+    res.json(slidesWithUrls);
+  } catch (error) {
+    console.error("Error fetching hero slides:", error);
+    // Intentar con HeroSlide por si acaso (fallback)
+    try {
+      if (prisma.HeroSlide) {
+         const slides = await prisma.HeroSlide.findMany({
+          where: { isActive: true },
+          orderBy: { order: "asc" },
+        });
+        const slidesWithUrls = slides.map(slide => ({
+          ...slide,
+          imageUrl: toPublicUrl(slide.imageUrl),
+          linkUrl: slide.linkUrl, 
+        }));
+        return res.json(slidesWithUrls);
+      }
+      res.status(500).json({ error: "Error fetching hero slides" });
+    } catch (e) {
+      res.status(500).json({ error: "Error fetching hero slides" });
+    }
+  }
 });
 
 module.exports = router;

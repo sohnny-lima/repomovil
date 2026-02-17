@@ -74,18 +74,28 @@ export default function Home() {
                       {/* Gradient overlay on hover */}
                       <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-green-500/5 to-green-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                       
-                      {/* Icon */}
+                      {/* Icon or Image */}
                       <div className="relative flex-shrink-0 z-10">
-                        <div 
-                          className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg shadow-gray-300/40 dark:shadow-black/40 group-hover:shadow-xl group-hover:shadow-green-500/30 dark:group-hover:shadow-green-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 backdrop-blur-sm" 
-                          style={{ 
-                            background: cat.iconColor 
-                              ? `linear-gradient(135deg, ${cat.iconColor}15, ${cat.iconColor}30)` 
-                              : 'linear-gradient(135deg, #22c55e15, #22c55e30)'
-                          }}
-                        >
-                          <Icon size={32} style={{ color: cat.iconColor || '#22c55e' }} className="group-hover:scale-110 transition-transform duration-300" />
-                        </div>
+                        {cat.imageUrl ? (
+                          <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-lg shadow-gray-300/40 dark:shadow-black/40 group-hover:shadow-xl group-hover:shadow-green-500/30 dark:group-hover:shadow-green-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                            <img
+                              src={cat.imageUrl}
+                              alt={cat.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div 
+                            className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg shadow-gray-300/40 dark:shadow-black/40 group-hover:shadow-xl group-hover:shadow-green-500/30 dark:group-hover:shadow-green-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 backdrop-blur-sm" 
+                            style={{ 
+                              background: cat.iconColor 
+                                ? `linear-gradient(135deg, ${cat.iconColor}15, ${cat.iconColor}30)` 
+                                : 'linear-gradient(135deg, #22c55e15, #22c55e30)'
+                            }}
+                          >
+                            <Icon size={32} style={{ color: cat.iconColor || '#22c55e' }} className="group-hover:scale-110 transition-transform duration-300" />
+                          </div>
+                        )}
                       </div>
                       
                       {/* Content */}
@@ -127,17 +137,17 @@ export default function Home() {
           </div>
 
           {loading ? (
-             <div className="space-y-4">
+             <div className="space-y-4 max-w-2xl mx-auto">
                {[1, 2, 3].map(i => (
                  <div key={i} className="h-24 bg-gray-200 dark:bg-slate-900 rounded-2xl animate-pulse"></div>
                ))}
              </div>
           ) : recentResources.length === 0 ? (
-             <div className="p-12 bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 text-center">
+             <div className="p-12 bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 text-center max-w-2xl mx-auto">
                <p className="text-gray-500 dark:text-gray-400 text-lg">No hay recursos destacados</p>
              </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4 max-w-2xl mx-auto">
               {recentResources.map((item) => {
                 const isVideo = item.type === 'YOUTUBE';
                 
