@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import { getHeroSlides } from '@/lib/api';
 import { BRANDING } from '@/lib/constants';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:4000';
 
 const getImageUrl = (url) => {
   if (!url) return '/placeholder.png';

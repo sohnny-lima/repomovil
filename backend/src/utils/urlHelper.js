@@ -4,7 +4,7 @@
  * @returns {string|null} - URL pública completa o null
  */
 function toPublicUrl(value) {
-  const baseUrl = process.env.APP_URL || 'http://localhost:4000';
+  const baseUrl = process.env.APP_URL || 'http://127.0.0.1:4000';
   
   if (!value) return null;
   

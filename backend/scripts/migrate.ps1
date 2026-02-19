@@ -22,8 +22,8 @@ if (!(Test-Path ".\node_modules")) {
 }
 
 # 2) Definir URLs de migraciÃ³n (usuario con acceso a repomovil + prisma_shadow)
-$env:DATABASE_URL="mysql://prisma_migrate:migrate_123456@localhost:3306/repomovil"
-$env:SHADOW_DATABASE_URL="mysql://prisma_migrate:migrate_123456@localhost:3306/prisma_shadow"
+$env:DATABASE_URL="mysql://prisma_migrate:migrate_123456@127.0.0.1:3306/repomovil"
+$env:SHADOW_DATABASE_URL="mysql://prisma_migrate:migrate_123456@127.0.0.1:3306/prisma_shadow"
 
 Write-Host "DATABASE_URL       = (prisma_migrate@localhost)/repomovil"
 Write-Host "SHADOW_DATABASE_URL= (prisma_migrate@localhost)/prisma_shadow"

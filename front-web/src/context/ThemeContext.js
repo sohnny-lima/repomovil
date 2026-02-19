@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState('dark');
 
   useEffect(() => {
     // Check local storage or system preference
@@ -13,8 +13,8 @@ export function ThemeProvider({ children }) {
     if (storedTheme) {
       setTimeout(() => setTheme(storedTheme), 0);
     } else {
-      // Default to light regardless of system preference as per request
-      setTimeout(() => setTheme('light'), 0);
+      // Default to dark regardless of system preference as per request
+      setTimeout(() => setTheme('dark'), 0);
     }
   }, []);
 
