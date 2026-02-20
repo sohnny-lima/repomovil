@@ -12,6 +12,8 @@ model adminuser {
   passwordHash String
   role         String   @default("ADMIN")
   createdAt    DateTime @default(now())
+
+  @@map("AdminUser")
 }
 
 model category {
@@ -24,6 +26,8 @@ model category {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   item        item[]
+
+  @@map("Category")
 }
 
 model heroslide {
@@ -35,6 +39,8 @@ model heroslide {
   order     Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
+
+  @@map("HeroSlide")
 }
 
 model item {
@@ -51,6 +57,7 @@ model item {
   category    category  @relation(fields: [categoryId], references: [id], onDelete: Cascade, map: "Item_categoryId_fkey")
 
   @@index([categoryId], map: "Item_categoryId_fkey")
+  @@map("Item")
 }
 
 enum item_type {

@@ -39,9 +39,16 @@ export default function LoginPage() {
     const result = loginSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors = {};
-      result.error.errors.forEach(err => {
-        fieldErrors[err.path[0]] = err.message;
-      });
+      if (result.error?.errors) {
+        result.error.errors.forEach(err => {
+          fieldErrors[err.path[0]] = err.message;
+        });
+      } else if (result.error?.issues) {
+         // Fallback for some Zod versions
+         result.error.issues.forEach(err => {
+          fieldErrors[err.path[0]] = err.message;
+        });
+      }
       setErrors(fieldErrors);
       return;
     }
@@ -58,12 +65,28 @@ export default function LoginPage() {
         setApiError('Error al iniciar sesión');
       }
     } catch (error) {
-      if (error.response?.status === 401) {
-        setApiError('Credenciales incorrectas');
-      } else if (error.response?.status === 422) {
-        setApiError('Datos inválidos');
+      console.error(error);
+      const data = error?.response?.data;
+      const maybeErrors = data?.errors ?? data?.message ?? data?.error ?? 'Error al iniciar sesión';
+      const list = Array.isArray(maybeErrors) ? maybeErrors : [String(maybeErrors)];
+      
+      const fieldErrors = {};
+      // Map array errors to generic 'apiError' or try to map to fields if responsive structure matches
+      // For simplicity in this specific request, we set the apiError to the first message if it's a string,
+      // or join them. The user request example suggested a specific way to set errors.
+      // However, the existing code uses 'setApiError' for general errors and 'setErrors' for field errors.
+      // Let's adapt as per the prompt's "Fix 1" suggestion to set a list of errors.
+      // But since the current UI has a single `apiError` string and `errors` object for fields,
+      // I will map the first error to apiError for now to keep UI simple, or better yet,
+      // if the error is a specific field error (unlikely from a generic 401/422 without detailed parsing),
+      // I'll just set the main API error.
+      // ACTUALLY, the prompt provided a specific snippet to replace the logic.
+      // I will adapt it to the existing state variables: setApiError used for the main alert.
+      
+      if (list.length > 0) {
+          setApiError(list[0]);
       } else {
-        setApiError('Error al conectar con el servidor');
+          setApiError('Error al conectar con el servidor');
       }
     } finally {
       setLoading(false);

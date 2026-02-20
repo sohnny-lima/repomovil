@@ -1,3 +1,3 @@
-ALTER TABLE category
+ALTER TABLE Category
 ADD COLUMN imageUrl TEXT NULL
 AFTER iconColor;
