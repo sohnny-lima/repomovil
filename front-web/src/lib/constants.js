@@ -16,7 +16,7 @@ export const BRANDING = {
   COPYRIGHT: "Mayordomía MPC 2026 - Misión Central del Perú",
   
   // Títulos y descripciones
-  SITE_TITLE: "Repomovil - Recursos para Mayordomía",
+  SITE_TITLE: "MCP 2026 - Recursos para Mayordomía",
   HERO_WELCOME: "Bienvenidos a Mayordomía",
   
   // Placeholders para admin
