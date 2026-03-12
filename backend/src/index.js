@@ -23,7 +23,14 @@ const prisma = require("./prisma");
 const app = express();
 
 // ── Middleware ─────────────────────────────────────────────────────────────
-app.use(cors());
+const corsOptions = {
+  origin: ["https://skygym.info", "http://localhost:3000"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Habilitar preflight OPTIONS para todas las rutas
 app.use(express.json());
 
 // ── Static files ───────────────────────────────────────────────────────────
