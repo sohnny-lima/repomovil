@@ -24,9 +24,14 @@ const app = express();
 
 // ── Middleware ─────────────────────────────────────────────────────────────
 const corsOptions = {
-  origin: ["https://skygym.info", "http://localhost:3000"],
+  origin: [
+    "https://skygym.info",
+    "https://www.skygym.info",
+    "http://localhost:3000"
+  ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
 };
 
 app.use(cors(corsOptions));
