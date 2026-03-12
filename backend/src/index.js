@@ -34,8 +34,9 @@ const corsOptions = {
   credentials: true
 };
 
+// cors() responde automáticamente a las preflight OPTIONS cuando se define 'methods'
+// No usar app.options("*", ...) ya que rompe path-to-regexp en Express 5+
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Habilitar preflight OPTIONS para todas las rutas
 app.use(express.json());
 
 // ── Static files ───────────────────────────────────────────────────────────
