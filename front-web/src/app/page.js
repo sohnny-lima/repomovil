@@ -47,11 +47,11 @@ export default function Home() {
       
       <main className="flex-1 w-full max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
         
-        {/* Section 1: Ministerios (Categories) - Linktree Style */}
+        {/* Section 1: Mayordomía (Categories) - Linktree Style */}
         <section>
           <div className="flex items-center space-x-4 mb-4">
             <div className="h-10 w-2 bg-green-500 rounded-full"></div>
-            <h2 className="text-gray-900 dark:text-white text-3xl font-bold tracking-wide uppercase">MINISTERIOS</h2>
+            <h2 className="text-gray-900 dark:text-white text-3xl font-bold tracking-wide uppercase">MAYORDOMÍA</h2>
           </div>
 
           {loading ? (
@@ -62,7 +62,7 @@ export default function Home() {
              </div>
           ) : categories.length === 0 ? (
             <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 text-center">
-              <p className="text-gray-500 dark:text-gray-400 text-lg">No hay ministerios disponibles</p>
+              <p className="text-gray-500 dark:text-gray-400 text-lg">No hay categorías disponibles</p>
             </div>
           ) : (
             <div className="max-w-2xl mx-auto">

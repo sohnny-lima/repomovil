@@ -16,17 +16,54 @@ model adminuser {
   @@map("AdminUser")
 }
 
-model category {
-  id          String   @id @default(cuid())
+model ministry {
+  id          String              @id @default(cuid())
   name        String
+  slug        String              @unique
   description String?
-  iconKey     String?
-  iconColor   String?
-  imageUrl    String?  @db.Text
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  item        item[]
+  isDefault   Boolean             @default(false)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  categories  category[]
+  resources   ministryresource[]
 
+  @@map("Ministry")
+}
+
+model ministryresource {
+  id           String         @id @default(cuid())
+  title        String
+  description  String?
+  type         resource_type
+  fileUrl      String         @db.Text
+  storagePath  String?        @db.Text
+  originalName String?
+  mimeType     String?
+  extension    String?
+  sizeBytes    BigInt?
+  ministryId   String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  ministry     ministry       @relation(fields: [ministryId], references: [id], onDelete: Cascade)
+
+  @@index([ministryId])
+  @@map("MinistryResource")
+}
+
+model category {
+  id         String    @id @default(cuid())
+  name       String
+  description String?
+  iconKey    String?
+  iconColor  String?
+  imageUrl   String?   @db.Text
+  isActive   Boolean   @default(true)
+  ministryId String?
+  createdAt  DateTime  @default(now())
+  item       item[]
+  ministry   ministry? @relation(fields: [ministryId], references: [id])
+
+  @@index([ministryId])
   @@map("Category")
 }
 
@@ -65,4 +102,12 @@ enum item_type {
   DRIVE
   ONEDRIVE
   OTHER
+}
+
+enum resource_type {
+  PDF
+  PPTX
+  AUDIO
+  VIDEO
+  WORD
 }

@@ -1,8 +1,9 @@
 const router = require("express").Router();
-const { z } = require("zod");
 
 const prisma = require("../prisma");
 const { requireAuth } = require("../middleware/auth");
+const { validateRequest } = require("../middleware/validateRequest");
+const { categorySchema, itemSchema, heroSlideSchema } = require("../schemas/admin.schemas");
 const { detectItemType } = require("../utils/detectType");
 const cache = require("../utils/cache");
 
@@ -16,22 +17,16 @@ function requireAdmin(req, res, next) {
 router.use(requireAuth, requireAdmin);
 
 // ── Categories ──────────────────────────────────────────────────────────────
-const categorySchema = z.object({
-  name: z.string().min(2),
-  description: z.string().optional().nullable(),
-  iconKey: z.string().optional().nullable(),
-  iconColor: z.string().optional().nullable(),
-  imageUrl: z.string().optional().nullable(),
-  isActive: z.boolean().optional(),
-});
 
-router.post("/categories", async (req, res, next) => {
-  const parsed = categorySchema.safeParse(req.body);
-  if (!parsed.success)
-    return res.status(422).json({ ok: false, errors: parsed.error.flatten() });
-
+router.post("/categories", validateRequest(categorySchema), async (req, res, next) => {
   try {
-    const created = await prisma.category.create({ data: parsed.data });
+    const data = { ...req.validated.body };
+    // Auto-assign to Mayordomía if no ministryId provided
+    if (!data.ministryId) {
+      const mayordomia = await prisma.ministry.findUnique({ where: { slug: "mayordomia" } });
+      if (mayordomia) data.ministryId = mayordomia.id;
+    }
+    const created = await prisma.category.create({ data });
     cache.invalidate("public:categories");
     res.json({ ok: true, data: created });
   } catch (err) {
@@ -40,16 +35,12 @@ router.post("/categories", async (req, res, next) => {
   }
 });
 
-router.put("/categories/:id", async (req, res, next) => {
+router.put("/categories/:id", validateRequest(categorySchema.partial()), async (req, res, next) => {
   const { id } = req.params;
-  const parsed = categorySchema.partial().safeParse(req.body);
-  if (!parsed.success)
-    return res.status(422).json({ ok: false, errors: parsed.error.flatten() });
-
   try {
     const updated = await prisma.category.update({
       where: { id },
-      data: parsed.data,
+      data: req.validated.body,
     });
     cache.invalidate("public:categories");
     res.json({ ok: true, data: updated });
@@ -72,33 +63,9 @@ router.delete("/categories/:id", async (req, res, next) => {
 });
 
 // ── Items ───────────────────────────────────────────────────────────────────
-// Helper for flexible URL validation
-const isValidUrl = (val) => {
-  try {
-    const u = new URL(val);
-    return ["http:", "https:"].includes(u.protocol);
-  } catch {
-    return false;
-  }
-};
 
-const itemSchema = z.object({
-  categoryId: z.string().min(1),
-  type: z.enum(["YOUTUBE", "DRIVE", "ONEDRIVE", "OTHER"]).optional(),
-  title: z.string().min(2),
-  url: z.string().refine(isValidUrl, { message: "URL inválida" }),
-  description: z.string().optional().nullable(),
-  iconKey: z.string().optional().nullable(),
-  iconColor: z.string().optional().nullable(),
-  isActive: z.boolean().optional(),
-});
-
-router.post("/items", async (req, res, next) => {
-  const parsed = itemSchema.safeParse(req.body);
-  if (!parsed.success)
-    return res.status(422).json({ ok: false, errors: parsed.error.flatten() });
-
-  const data = parsed.data;
+router.post("/items", validateRequest(itemSchema), async (req, res, next) => {
+  const data = { ...req.validated.body };
   if (!data.type) {
     data.type = detectItemType(data.url);
   }
@@ -112,16 +79,12 @@ router.post("/items", async (req, res, next) => {
   }
 });
 
-router.put("/items/:id", async (req, res, next) => {
+router.put("/items/:id", validateRequest(itemSchema.partial()), async (req, res, next) => {
   const { id } = req.params;
-  const parsed = itemSchema.partial().safeParse(req.body);
-  if (!parsed.success)
-    return res.status(422).json({ ok: false, errors: parsed.error.flatten() });
-
   try {
     const updated = await prisma.item.update({
       where: { id },
-      data: parsed.data,
+      data: req.validated.body,
     });
     res.json({ ok: true, data: updated });
   } catch (err) {
@@ -142,22 +105,10 @@ router.delete("/items/:id", async (req, res, next) => {
 });
 
 // ── Hero Carousel ───────────────────────────────────────────────────────────
-const heroSlideSchema = z.object({
-  title: z.string().optional().nullable(),
-  subtitle: z.string().optional().nullable(),
-  imageUrl: z.string().min(1, "La imagen es obligatoria"),
-  linkUrl: z.string().optional().nullable(),
-  order: z.number().int().optional(),
-  isActive: z.boolean().optional(),
-});
 
-router.post("/hero", async (req, res, next) => {
-  const parsed = heroSlideSchema.safeParse(req.body);
-  if (!parsed.success)
-    return res.status(422).json({ ok: false, errors: parsed.error.flatten() });
-
+router.post("/hero", validateRequest(heroSlideSchema), async (req, res, next) => {
   try {
-    const created = await prisma.heroslide.create({ data: parsed.data });
+    const created = await prisma.heroslide.create({ data: req.validated.body });
     res.json({ ok: true, data: created });
   } catch (err) {
     console.error("[ERROR] Create hero slide failed:", err.message);
@@ -165,16 +116,12 @@ router.post("/hero", async (req, res, next) => {
   }
 });
 
-router.put("/hero/:id", async (req, res, next) => {
+router.put("/hero/:id", validateRequest(heroSlideSchema.partial()), async (req, res, next) => {
   const { id } = req.params;
-  const parsed = heroSlideSchema.partial().safeParse(req.body);
-  if (!parsed.success)
-    return res.status(422).json({ ok: false, errors: parsed.error.flatten() });
-
   try {
     const updated = await prisma.heroslide.update({
       where: { id },
-      data: parsed.data,
+      data: req.validated.body,
     });
     res.json({ ok: true, data: updated });
   } catch (err) {

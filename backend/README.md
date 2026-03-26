@@ -1,139 +1,61 @@
-# Backend - Repomovil
+# Backend API - Repomovil
 
-Este proyecto es el backend de Repomovil, construido con **Node.js** y **Prisma ORM versión 7.x**, conectado a una base de datos **MariaDB 10.4 / MySQL** (entorno XAMPP en Windows).
-
-Este documento detalla la arquitectura, configuración de permisos y flujos de trabajo **críticos** para mantener la integridad de la base de datos y evitar problemas de sincronización (Drift).
+API REST construida con **Node.js**, **Express 5** y **Prisma ORM 7.x**, sirviendo como piedra angular de validación, almacenamiento y lógica para Repomovil. Se conecta a una base de datos **MariaDB/MySQL**.
 
 ---
 
-## 🏗️ 1. Arquitectura de Base de Datos
+## 🏗️ 1. Patrones de Diseño y Modelos Principales
 
-El proyecto utiliza dos instancias lógicas en la base de datos para separar claramente los datos de producción de los datos efímeros necesarios para las migraciones de Prisma.
+La arquitectura respeta un enrutado aislado por características, un manejador global de errores para Express 5 (que por fin soporta validaciones asíncronas nativas) y manejo especializado para el uso de **BigInts** que genera Prisma nativamente.
 
-- **`repomovil`**: Base de datos PRINCIPAL donde reside la aplicación.
-- **`prisma_shadow`**: Base de datos SOMBRA (Shadow Database) utilizada exclusivamente por Prisma para calcular diferencias en el esquema.
-
-### 👥 2. Usuarios y Permisos
-
-Para garantizar la seguridad y el correcto funcionamiento de Prisma 7 (que requiere permisos elevados solo durante las migraciones), se han definido dos usuarios de base de datos distintos:
-
-| Rol               | Usuario (User)   | Permisos                                                   | Uso                                                                        | Comando Típico          |
-| :---------------- | :--------------- | :--------------------------------------------------------- | :------------------------------------------------------------------------- | :---------------------- |
-| **Runtime (App)** | `repomovil_user` | `SELECT`, `INSERT`, `UPDATE`, `DELETE` sobre `repomovil.*` | Ejecución normal de la API. **NO** tiene permisos DDL (Create/Alter/Drop). | `npm run dev`           |
-| **Migraciones**   | `prisma_migrate` | `ALL PRIVILEGES` sobre `repomovil.*` y `prisma_shadow.*`   | Ejecución de migraciones y cambios de esquema.                             | `.\scripts\migrate.ps1` |
-
-> **⚠️ IMPORTANTE:** Nunca uses el usuario `repomovil_user` para ejecutar migraciones, y nunca uses `prisma_migrate` para correr la aplicación en producción.
+**Modelos Clave:**
+- `AdminUser`: Autenticación y permisos.
+- `Ministry` & `MinistryResource`: Sistema de portales ministeriales con recursos multimedia.
+- `Category` & `Item`: Recursos comunes agrupados, para el catálogo global.
+- `HeroSlide`: Banners principales de inicio del front-web.
 
 ---
 
-## ⚙️ 3. Configuración de Prisma 7
+## ⚙️ 2. Reglas de Prisma 7 & Migraciones CRÍTICAS
 
-Este proyecto utiliza **Prisma 7**, lo cual introduce cambios importantes respecto a versiones anteriores (v5/v6).
+El proyecto utiliza dos instancias en la BD: `repomovil` (Producción) y `prisma_shadow` (Solo para Prisma).
 
-### ❌ Lo que NO debes hacer en `schema.prisma`
+> **⚠️ IMPORTANTE:** NUNCA ejecutes `npx prisma migrate dev` directamente por consola localmente configurado en producción si los permisos están fragmentados.
 
-En Prisma 7, el archivo `schema.prisma` **NO debe contener URLs de conexión**. Solo define el proveedor y los modelos.
-
-```prisma
-// backend/prisma/schema.prisma (Correcto)
-datasource db {
-  provider = "mysql"
-}
-
-generator client {
-  provider = "prisma-client-js"
-}
-
-// ... modelos ...
-```
-
-### ✅ Dónde están las URLs: `prisma.config.ts`
-
-Las URLs de conexión se definen programáticamente en el archivo de configuración de TypeScript.
-
-```typescript
-// backend/prisma.config.ts
-export default defineConfig({
-  schema: "prisma/schema.prisma",
-  datasource: {
-    // Las variables de entorno son inyectadas aquí
-    url: env("DATABASE_URL"),
-    shadowDatabaseUrl: env("SHADOW_DATABASE_URL"),
-  },
-  // ...
-});
-```
-
----
-
-## 🚀 4. Flujo de Trabajo: Migraciones
-
-Debido a la separación de usuarios y la configuración de Prisma 7, **NO EJECUTES `npx prisma migrate dev` DIRECTAMENTE.**
-
-Se ha creado un script de PowerShell dedicado para manejar las variables de entorno y usar el usuario correcto (`prisma_migrate`).
-
-### 📜 Script: `backend/scripts/migrate.ps1`
-
-Este script realiza lo siguiente automáticamente:
-
-1. Configura `DATABASE_URL` y `SHADOW_DATABASE_URL` con las credenciales del usuario `prisma_migrate`.
-2. Ejecuta la migración de Prisma.
-3. Actualiza el cliente de Prisma (`prisma generate`).
-4. Verifica el estado de la migración.
-5. Limpia las variables de entorno al finalizar.
-
-### 🛠️ Cómo crear una nueva migración
-
-Para aplicar cambios en `schema.prisma` y generar una nueva migración:
+Se recomienda usar el script de powershell dedicado provisto en `./scripts/migrate.ps1` que asume credenciales especiales de `prisma_migrate` para los Delta changes:
 
 ```powershell
-# Desde la raíz del proyecto (o backend/):
-powershell -NoProfile -ExecutionPolicy Bypass -File .\backend\scripts\migrate.ps1 -name "nombre_descriptivo_migracion"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\migrate.ps1 -name "nombre_descriptiva"
 ```
 
-**Ejemplo:**
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\migrate.ps1 -name "add_category_image"
-```
+✅ **Configuración Segura:**
+A diferencia de versiones pre-v7, *las credenciales de BD no residen en schema.prisma*, sino importadas condicional y programáticamente a través de `prisma.config.ts`.
 
 ---
 
-## 🚨 5. Manejo de Drift y Emergencias
+## 🛡️ 3. Características de Estabilidad Actuales
 
-**Drift** ocurre cuando la base de datos real es diferente a lo que Prisma "cree" que debería ser (según su historial de migraciones). Esto suele pasar si modificas la BD manualmente.
-
-### 🩹 Cómo solucionar Drift (SIN PERDER DATOS)
-
-Si modificaste la BD manualmente (ej. `ALTER TABLE` por emergencia) y `prisma migrate dev` falla pidiendo un reset (`--reset`):
-
-1. **NO aceptes el reset.** Perderás datos.
-2. Crea una carpeta de migración vacía manualmente en `prisma/migrations/AAAAMMDDHHMMSS_nombre_fix`.
-3. Crea un archivo `migration.sql` dentro de esa carpeta con el SQL que YA aplicaste manualmente.
-4. Marca la migración como "ya aplicada" usando `resolve`:
-
-```bash
-npx prisma migrate resolve --applied AAAAMMDDHHMMSS_nombre_fix
-```
-
-Esto le dice a Prisma: _"Ya hice este cambio, confía en mí y regístralo como hecho"_.
+- **Global Error Handler:** Los endpoints en API/Rutas no crashean el servidor frente a un fallo o valor `undefined`. Pasan en embudo a `errorHandler.js`.
+- **Graceful Shutdown:** Un interceptor de señales (`SIGINT`, `SIGTERM`) desconecta educadamente a Prisma antes de matar al proceso de Node.js.
+- **Interceptor BigInt**: Middleware de sanitización de payload que convierte proactivamente los objetos BigInt a Number para evitar el odioso error genérico `TypeError: Do not know how to serialize a BigInt` al interactuar `res.json()`.
 
 ---
 
-## 📜 6. Scripts Disponibles
+## 📈 4. Mejoras Propuestas (Roadmap del Backend)
 
-| Comando                 | Descripción                                                         |
-| :---------------------- | :------------------------------------------------------------------ |
-| `npm run dev`           | Inicia el servidor de desarrollo (usa `repomovil_user`).            |
-| `npm start`             | Inicia el servidor en producción.                                   |
-| `.\scripts\migrate.ps1` | **[CRÍTICO]** Único método aprobado para crear/aplicar migraciones. |
+El backend actual es robusto, pero el siguiente paso hacia el crecimiento es:
+
+1. **Abstracción del Almacenamiento (Storage):** Actualmente multer deja los archivos estáticos en `/public/uploads`. Si se escala horizontalmente (múltiples servidores o contenedores efímeros) los archivos se pierden o desincronizan. **Mejora:** Implementar servicios S3 (AWS) o Cloudinary.
+2. **Validación Zod como Middleware Global:** Estandarizar una pieza de "Pipeline" que capture `req.body` y lo confronte contra un esquema de Zod _antes_ del controlador.
+3. **Paginación Estándar:** Añadir cursores limit/offset nativos a las rutas GET que retornen listas (ej: categorías, assets) como prevensión para el sobreconsumo futuro de data.
+4. **Documentación Swagger / OpenAPI:** Implementar `swagger-ui-express` para exponer el catálogo final de Endpoints al desarrollador mobile automizado desde comentarios o Zod schemas.
 
 ---
 
-## ⛔ 7. Reglas de Oro
+## 🔧 5. Scripts Clave
 
-1. **PROHIBIDO** editar la estructura de la base de datos manualmente (phpMyAdmin, DBeaver) a menos que sea una emergencia absoluta.
-2. **PROHIBIDO** usar `npx prisma db push`. En entornos con migraciones, esto puede desincronizar el historial.
-3. **PROHIBIDO** poner credenciales o URLs directamente en `schema.prisma`.
-4. **SIEMPRE** usa el script `migrate.ps1` para cambios de esquema.
-5. **SIEMPRE** verifica que el servidor de desarrollo (`npm run dev`) funciona después de una migración.
+| Comando         | Descripción                               |
+| :-------------- | :---------------------------------------- |
+| `npm run dev`   | Servidor de dev en `nodemon` (port 4000)  |
+| `npm run start` | Node de producción                        |
+| `npm run seed`  | Ejecuta `seed.js` para popular DB vacías. |

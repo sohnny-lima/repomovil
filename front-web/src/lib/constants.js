@@ -8,16 +8,16 @@ export const BRANDING = {
   ORGANIZATION_NAME: "Misión Central del Perú",
   ORGANIZATION_NAME_SHORT: "MCP",
   
-  // Nombre del programa/evento
-  PROGRAM_NAME: "Mayordomía MPC 2026",
-  PROGRAM_NAME_SHORT: "Mayordomía 2026",
+  // Nombre del programa/sitio — ahora usa el nombre de la organización
+  PROGRAM_NAME: "Misión Central del Perú",
+  PROGRAM_NAME_SHORT: "MCP",
   
   // Textos combinados
-  COPYRIGHT: "Mayordomía MPC 2026 - Misión Central del Perú",
+  COPYRIGHT: "Misión Central del Perú 2026",
   
   // Títulos y descripciones
-  SITE_TITLE: "MCP 2026 - Recursos para Mayordomía",
-  HERO_WELCOME: "Bienvenidos a Mayordomía",
+  SITE_TITLE: "Misión Central del Perú",
+  HERO_WELCOME: "Bienvenidos a Misión Central del Perú",
   
   // Placeholders para admin
   PLACEHOLDER_SUBTITLE: "Ej: Misión Central del Perú",

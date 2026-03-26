@@ -17,6 +17,8 @@ const publicRoutes = require("./routes/public.routes");
 const authRoutes = require("./routes/auth.routes");
 const adminRoutes = require("./routes/admin.routes");
 const healthRoutes = require("./routes/health.routes");
+const ministryRoutes = require("./routes/ministry.routes");
+const ministryAdminRoutes = require("./routes/ministry-admin.routes");
 const { errorHandler } = require("./middleware/errorHandler");
 const prisma = require("./prisma");
 
@@ -25,9 +27,10 @@ const app = express();
 // ── Middleware ─────────────────────────────────────────────────────────────
 const corsOptions = {
   origin: [
-    "https://skygym.info",
-    "https://www.skygym.info",
-    "http://localhost:3000"
+    "https://mcp2026.org",
+    "https://www.mcp2026.org",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -39,7 +42,16 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// ── BigInt safety net: catch any BigInt that slips through to res.json ──────
+// This protects all routes if a Prisma BigInt field is serialized accidentally.
+app.set("json replacer", (key, value) =>
+  typeof value === "bigint" ? Number(value) : value
+);
+
 // ── Static files ───────────────────────────────────────────────────────────
+// Serves everything under public/uploads/ at /uploads/*
+// This covers both old /uploads/<img> (images now in /uploads/images/)
+// and new /uploads/resources/<kind>/<file>
 app.use("/uploads", express.static(path.join(__dirname, "../public/uploads")));
 
 // ── Routes ─────────────────────────────────────────────────────────────────
@@ -48,6 +60,8 @@ app.use("/health", healthRoutes);
 app.use("/api", publicRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/admin/ministries", ministryAdminRoutes);
+app.use("/api/ministries", ministryRoutes);
 app.use("/api/upload", require("./routes/upload.routes"));
 
 // ── Global error handler (must be LAST) ────────────────────────────────────

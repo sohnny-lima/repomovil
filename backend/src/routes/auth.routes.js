@@ -1,22 +1,13 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
-const { z } = require("zod");
 
 const prisma = require("../prisma");
 const { signToken } = require("../utils/jwt");
+const { validateRequest } = require("../middleware/validateRequest");
+const { loginSchema } = require("../schemas/auth.schemas");
 
-const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
-
-router.post("/login", async (req, res, next) => {
-  const parsed = loginSchema.safeParse(req.body);
-  if (!parsed.success) {
-    return res.status(422).json({ ok: false, message: "Datos inválidos" });
-  }
-
-  const { email, password } = parsed.data;
+router.post("/login", validateRequest(loginSchema), async (req, res, next) => {
+  const { email, password } = req.validated.body;
 
   try {
     const admin = await prisma.adminuser.findUnique({ where: { email } });

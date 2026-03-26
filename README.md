@@ -2,362 +2,125 @@
 
 > **Sistema de gestión y distribución de recursos multimedia para Mayordomía 2026**
 
-Monorepo completo con API REST, aplicación web pública con panel de administración, y aplicación móvil multiplataforma.
+Un potente monorepo que proporciona una API REST, una aplicación web pública con panel de administración, y una aplicación móvil multiplataforma.
 
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 
 ---
 
-## 📋 Descripción
+## 📋 Descripción General
 
-**Repomovil** es un sistema integral para la gestión y distribución de recursos educativos multimedia organizados por categorías. Permite a administradores gestionar contenido (videos de YouTube, documentos de Drive, OneDrive, y otros enlaces) y a usuarios finales acceder a estos recursos de manera organizada tanto desde la web como desde dispositivos móviles.
+**Repomovil** es un sistema integral para la gestión y distribución de recursos educativos multimedia organizados por categorías y ministerios. Permite a los administradores gestionar su contenido fácilmente centralizando enlaces de YouTube, Drive, OneDrive y archivos propios, ofreciendo a los usuarios finales acceder a estos recursos de manera organizada, moderna y veloz desde web o celular.
 
 ### Características Principales
-
-- ✅ **Gestión de Categorías**: Crear, editar y eliminar categorías con iconos y colores personalizables
-- ✅ **Gestión de Recursos**: Administrar items multimedia con detección automática de tipo
-- ✅ **Autenticación Segura**: Sistema de login con JWT para administradores
-- ✅ **Búsqueda Avanzada**: Búsqueda en tiempo real por título, descripción y URL
-- ✅ **Interfaz Moderna**: UI responsive con diseño profesional
-- ✅ **Multiplataforma**: Web (Next.js) y móvil (React Native/Expo)
-- ✅ **Hero Carousel**: Carrusel de imágenes destacadas en la página principal
+- ✅ **Gestión de Recursos y Ministerios**: Organización superior de categorías con íconos, colores e imágenes de portada.
+- ✅ **Autenticación JWT Segura**: Panel administrativo privado protegido.
+- ✅ **Búsqueda Avanzada**: Sistema de búsqueda instantánea por título, descripciones y tipos.
+- ✅ **Arquitectura Full-Stack**: Web (Next.js App Router) y API (Express + MariaDB) separadas para mayor escalabilidad.
+- ✅ **Diseño Responsivo e Impactante**: Tailwind CSS v4 con dark mode automático.
 
 ---
 
-## 🏗️ Arquitectura
+## 🏗️ Arquitectura y Flujo de Datos
 
-### Estructura del Monorepo
-
-```
+```text
 repomovil/
-├── backend/          # API REST (Node.js + Express + Prisma + PostgreSQL)
-├── front-web/        # Aplicación web (Next.js + React + Tailwind)
-├── frontend/         # App móvil (React Native + Expo)
-└── README.md         # Este archivo
+├── backend/          # API REST (Node.js + Express 5 + Prisma 7 + PostgreSQL/MariaDB)
+├── front-web/        # Aplicación web (Next.js 16 + React 19 + Tailwind v4)
+├── frontend/         # App móvil (React Native + Expo) [Solo referencial]
+└── README.md         # Documentación general
 ```
 
-### Flujo de Datos
-
-```
-┌─────────────┐         ┌─────────────┐         ┌──────────────┐
-│  Frontend   │────────▶│   Backend   │────────▶│  PostgreSQL  │
-│  (Web/Móvil)│◀────────│  (API REST) │◀────────│   Database   │
-└─────────────┘         └─────────────┘         └──────────────┘
-```
-
-- **Frontend Web/Móvil** → Consume API REST vía HTTP/Axios
-- **Backend** → Procesa requests, valida datos, ejecuta lógica de negocio
-- **PostgreSQL** → Almacena datos (usuarios, categorías, items, hero slides)
+El **Frontend (Web/Móvil)** consume datos de la **API REST Backend** mediante Axios, la cual se comunica bidireccionalmente usando **Prisma ORM** hacia una base de datos **MariaDB/PostgreSQL**.
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
-### Backend
+### 🌐 Backend
+- Node.js & Express.js v5.2
+- **Base de Datos:** MariaDB / PostgreSQL
+- **ORM:** Prisma Client v7.3
+- **Tools:** multer, jsonwebtoken, bcrypt, zod
 
-- **Runtime**: Node.js
-- **Framework**: Express.js v5.2.1
-- **Base de Datos**: PostgreSQL
-- **ORM**: Prisma v7.3.0
-- **Autenticación**: JWT (jsonwebtoken v9.0.3)
-- **Validación**: Zod v4.3.6
-- **Seguridad**: bcrypt v6.0.0
-
-### Frontend Web
-
-- **Framework**: Next.js 16.1.6 (App Router)
-- **UI**: React 19.2.3
-- **Estilos**: Tailwind CSS v4
-- **HTTP Client**: Axios v1.13.4
-- **Validación**: Zod v4.3.6
-- **Iconos**: Lucide React
-
-### Frontend Móvil
-
-- **Framework**: React Native v0.81.5
-- **Plataforma**: Expo v54.0.32
-- **Navegación**: React Navigation v7
-- **Estilos**: NativeWind v4.2.1 + Tailwind CSS
-- **HTTP Client**: Axios v1.13.3
-- **Persistencia**: AsyncStorage v2.2.0
+### 💻 Front-Web
+- **Framework:** Next.js 16.1.6 (App Router)
+- **UI:** React 19, Tailwind CSS v4, Lucide React
+- **Client HTTP:** Axios 
 
 ---
 
-## 🚀 Inicio Rápido
+## 🚀 Inicio Rápido (Desarrollo Local)
 
 ### Requisitos Previos
+- **Node.js**: v20+ recomendado.
+- **Base de Datos**: Instancia de MariaDB, MySQL o PostgreSQL activa localmente.
 
-- Node.js v18+ instalado
-- PostgreSQL v14+ instalado y corriendo
-- npm o yarn
-- (Opcional) Expo Go para pruebas en dispositivo móvil
-
-### Instalación General
-
-#### 1. Clonar el repositorio
-
-```bash
-git clone <repository-url>
-cd repomovil
-```
-
-#### 2. Configurar Backend
+### 1. Backend
 
 ```bash
 cd backend
 npm install
+```
 
-# Crear archivo .env
-cat > .env << EOF
-DATABASE_URL="postgresql://usuario:password@localhost:5432/repomovil?schema=public"
-JWT_SECRET="tu_secreto_super_seguro_cambiar_en_produccion"
+Crea tu archivo `.env` en `backend/`:
+```env
+DATABASE_URL="mysql://root:@localhost:3306/repomovil"
+JWT_SECRET="super_secreto_cambiar_en_prod"
 PORT=4000
-PRISMA_CLIENT_ENGINE_TYPE=library
-EOF
+```
 
-# Ejecutar migraciones
-npx prisma migrate dev
-
-# Generar Prisma Client
+Ejecuta las migraciones y arranca:
+```bash
+# Sigue las instrucciones del README en backend/ para migraciones seguras con Prisma 7.
 npx prisma generate
-
-# Crear usuario admin inicial
-node src/seed.js
-# Credenciales: admin@repomovil.com / Admin12345
-
-# Iniciar servidor
+node src/seed.js # Crea admin inicial
 npm run dev
 ```
 
-#### 3. Configurar Frontend Web
+### 2. Front-Web
 
 ```bash
 cd ../front-web
 npm install
+```
 
-# Crear archivo .env.local
-echo 'NEXT_PUBLIC_API_BASE_URL=http://localhost:4000' > .env.local
+Crea tu `.env.local`:
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
+```
 
-# Iniciar en desarrollo
+Arranca en puerto 3000:
+```bash
 npm run dev
 ```
 
-#### 4. Configurar Frontend Móvil
+---
 
-```bash
-cd ../frontend
-npm install
+## 🔐 Credenciales de Admin (Por Defecto)
 
-# Actualizar SERVER_IP en src/api/client.js con tu IP local
-# Ejemplo: const SERVER_IP = '192.168.1.100';
+- **Email**: `admin@repomovil.com`
+- **Password**: `Admin12345`
 
-# Iniciar Expo
-npm start
-```
+> ⚠️ *Modifica esto inmediatamente en producción a través de la base de datos o interfaz.*
 
 ---
 
-## 🎯 Ejecución en Desarrollo
+## 📈 Roadmap de Mejoras Recomendadas
 
-### Backend
+Como parte del análisis de arquitectura, se proponen las siguientes mejoras para siguientes iteraciones:
 
-```bash
-cd backend
-npm run dev          # Servidor con auto-reload (nodemon) en puerto 4000
-```
-
-### Frontend Web
-
-```bash
-cd front-web
-npm run dev          # Next.js dev server en puerto 3000
-```
-
-### Frontend Móvil
-
-```bash
-cd frontend
-npm start            # Expo dev server
-npm run android      # Abrir en emulador Android
-npm run ios          # Abrir en simulador iOS
-```
+1. **Monorepo Tools:** Migrar a Turborepo o usar npm workspaces para sincronizar *linting*, *scripts* y compartir dependencias entre backend y frontend.
+2. **Dockerización:** Añadir un `docker-compose.yml` maestro para levantar la base de datos, backend y frontend en un solo paso local.
+3. **CI/CD:** Crear pipelines de GitHub Actions para despliegues automatizados y tests al confirmar los *commits*.
+4. **End-to-End Type Safety:** Compartir esquemas Zod o tipos Prisma exportados con el frontend para evitar que las API's rompan la estructura visual en tiempo de compilación.
 
 ---
 
-## 🚀 Ejecución en Producción
-
-### Backend
-
-```bash
-cd backend
-npm run build        # Genera Prisma Client
-npm start            # Inicia servidor en producción
-```
-
-### Frontend Web
-
-```bash
-cd front-web
-npm run build        # Genera build optimizado
-npm start            # Inicia servidor Next.js en producción
-```
-
-### Frontend Móvil
-
-```bash
-cd frontend
-# Seguir guía de Expo para builds de producción:
-# https://docs.expo.dev/build/introduction/
-```
+Para información detallada del desarrollo interno, revisa la documentación específica:
+- [Documentación del Backend](./backend/README.md)
+- [Documentación del Front-Web](./front-web/README.md)
 
 ---
-
-## 🔧 Variables de Entorno
-
-### Backend (`backend/.env`)
-
-```env
-DATABASE_URL="postgresql://usuario:password@localhost:5432/repomovil?schema=public"
-JWT_SECRET="secreto_aleatorio_fuerte_minimo_32_caracteres"
-PORT=4000
-PRISMA_CLIENT_ENGINE_TYPE=library
-```
-
-### Frontend Web (`front-web/.env.local`)
-
-```env
-NEXT_PUBLIC_API_BASE_URL=http://192.168.100.10:4000
-```
-
-**Nota**: Cambiar la IP por la de tu servidor backend.
-
-### Frontend Móvil
-
-Configurar directamente en `frontend/src/api/client.js`:
-
-```javascript
-const SERVER_IP = "192.168.100.10"; // Tu IP local
-```
-
----
-
-## 🔐 Credenciales de Administrador
-
-**Email**: `admin@repomovil.com`  
-**Password**: `Admin12345`
-
-> ⚠️ **IMPORTANTE**: Cambiar estas credenciales en producción ejecutando un script de actualización o directamente en la base de datos.
-
----
-
-## 📚 Documentación Detallada
-
-Cada parte del proyecto tiene su propia documentación:
-
-- **[Backend README](backend/README.md)** - API, endpoints, base de datos
-- **[Frontend Web README](front-web/README.md)** - Aplicación web y panel admin
-- **[Frontend Móvil README](frontend/README.md)** - Aplicación móvil
-
----
-
-## 🔌 API Endpoints Principales
-
-### Públicos (sin autenticación)
-
-- `GET /api/categories` - Lista categorías activas con items
-- `GET /api/categories/:id/items` - Items de una categoría
-- `GET /api/search?q=...` - Búsqueda de items
-- `GET /api/hero` - Slides del hero carousel
-
-### Autenticación
-
-- `POST /api/auth/login` - Login de administrador
-
-### Admin (requiere JWT Bearer token)
-
-**Categorías**:
-
-- `POST /api/admin/categories` - Crear categoría
-- `PUT /api/admin/categories/:id` - Actualizar categoría
-- `DELETE /api/admin/categories/:id` - Eliminar categoría
-
-**Items**:
-
-- `POST /api/admin/items` - Crear item
-- `PUT /api/admin/items/:id` - Actualizar item
-- `DELETE /api/admin/items/:id` - Eliminar item
-
-**Hero Carousel**:
-
-- `POST /api/admin/hero` - Crear slide
-- `PUT /api/admin/hero/:id` - Actualizar slide
-- `DELETE /api/admin/hero/:id` - Eliminar slide
-
----
-
-## 🐛 Troubleshooting
-
-### Error: "Cannot connect to backend"
-
-- Verificar que backend esté corriendo
-- Actualizar variables de entorno con IP correcta
-- Verificar que dispositivo y PC estén en la misma red WiFi (móvil)
-- Revisar firewall/antivirus
-
-### Error: "Prisma Client not found"
-
-```bash
-cd backend
-npx prisma generate
-```
-
-### Error: "JWT_SECRET not defined"
-
-Crear archivo `.env` en `backend/` con las variables requeridas.
-
-### Error de CORS
-
-Configurar CORS en `backend/src/index.js` para permitir tu dominio/IP.
-
----
-
-## 🤝 Contribución
-
-### Workflow
-
-1. Crear rama feature: `git checkout -b feature/nombre-funcionalidad`
-2. Hacer commits descriptivos: `git commit -m "feat: descripción"`
-3. Push y crear Pull Request: `git push origin feature/nombre-funcionalidad`
-
-### Convenciones de Commits
-
-- `feat:` Nueva funcionalidad
-- `fix:` Corrección de bug
-- `docs:` Cambios en documentación
-- `refactor:` Refactorización de código
-- `style:` Formato, estilos (sin cambios de lógica)
-- `test:` Agregar o modificar tests
-- `chore:` Tareas de mantenimiento
-
----
-
-## 📄 Licencia
-
-Este proyecto es privado y está desarrollado para uso interno de la organización **Mayordomía 2026 - Unión Peruana del Sur**.
-
----
-
-## 📞 Soporte
-
-Para problemas o preguntas:
-
-1. Revisar la documentación específica de cada módulo
-2. Consultar la sección de Troubleshooting
-3. Contactar al equipo de desarrollo
-
----
-
-**Última actualización**: 2026-02-03  
-**Versión**: 1.0.0  
-**Estado**: Activo en producción
+**Proyecto Mayordomía 2026** - Unión Peruana del Sur.

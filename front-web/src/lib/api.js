@@ -167,9 +167,73 @@ export const uploadFile = async (file) => {
   formData.append('file', file);
   
   const response = await http.post('/api/upload', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
+    headers: { 'Content-Type': 'multipart/form-data' },
   });
   return response.data;
 };
+
+// ============================================
+// MINISTRIES PUBLIC API
+// ============================================
+
+/** Get all ministries */
+export const getMinistries = async () => {
+  const response = await http.get('/api/ministries');
+  return response.data;
+};
+
+/** Get ministry by slug with resources */
+export const getMinistryBySlug = async (slug) => {
+  const response = await http.get(`/api/ministries/${slug}`);
+  return response.data;
+};
+
+// ============================================
+// MINISTRIES ADMIN API
+// ============================================
+
+/** List all ministries (admin) */
+export const getAdminMinistries = async () => {
+  const response = await http.get('/api/admin/ministries');
+  return response.data;
+};
+
+/** List resources of a ministry (admin) */
+export const getAdminMinistryResources = async (ministryId) => {
+  const response = await http.get(`/api/admin/ministries/${ministryId}/resources`);
+  return response.data;
+};
+
+/** Create a ministry resource */
+export const createMinistryResource = async (ministryId, data) => {
+  const response = await http.post(`/api/admin/ministries/${ministryId}/resources`, data);
+  return response.data;
+};
+
+/** Update a ministry resource */
+export const updateMinistryResource = async (ministryId, resourceId, data) => {
+  const response = await http.put(`/api/admin/ministries/${ministryId}/resources/${resourceId}`, data);
+  return response.data;
+};
+
+/** Delete a ministry resource */
+export const deleteMinistryResource = async (ministryId, resourceId) => {
+  const response = await http.delete(`/api/admin/ministries/${ministryId}/resources/${resourceId}`);
+  return response.data;
+};
+
+/** Upload a resource file (PDF, PPT, Word, Audio, Video) - up to 250MB */
+export const uploadResourceFile = async (file, onProgress) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await http.post('/api/upload/resource', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    ...(onProgress && {
+      onUploadProgress: (e) => {
+        if (e.total) onProgress(Math.round((e.loaded * 100) / e.total));
+      },
+    }),
+  });
+  return response.data;
+};
+
