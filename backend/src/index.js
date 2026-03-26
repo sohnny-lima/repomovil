@@ -9,7 +9,7 @@ const REQUIRED_VARS = ["DATABASE_URL", "JWT_SECRET"];
 const missing = REQUIRED_VARS.filter((v) => !process.env[v]);
 if (missing.length) {
   console.warn(
-    `[CONFIG] Warning: missing environment variable(s): ${missing.join(", ")}. Some features may not work.`
+    `[CONFIG] Warning: missing environment variable(s): ${missing.join(", ")}. Some features may not work.`,
   );
 }
 
@@ -27,14 +27,16 @@ const app = express();
 // ── Middleware ─────────────────────────────────────────────────────────────
 const corsOptions = {
   origin: [
+    "https://skygym.info", // 1. Primary production domain
+    "https://www.skygym.info",
     "https://mcp2026.org",
     "https://www.mcp2026.org",
     "http://localhost:3000",
-    "http://127.0.0.1:3000"
+    "http://127.0.0.1:3000",
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  credentials: true,
 };
 
 // cors() responde automáticamente a las preflight OPTIONS cuando se define 'methods'
@@ -45,7 +47,7 @@ app.use(express.json());
 // ── BigInt safety net: catch any BigInt that slips through to res.json ──────
 // This protects all routes if a Prisma BigInt field is serialized accidentally.
 app.set("json replacer", (key, value) =>
-  typeof value === "bigint" ? Number(value) : value
+  typeof value === "bigint" ? Number(value) : value,
 );
 
 // ── Static files ───────────────────────────────────────────────────────────
@@ -82,7 +84,7 @@ async function start() {
   } catch (err) {
     console.warn("[DB] Warning: could not connect to database:", err.message);
     console.warn(
-      "[DB] The server is running, but DB routes may fail until the database is available."
+      "[DB] The server is running, but DB routes may fail until the database is available.",
     );
   }
 
