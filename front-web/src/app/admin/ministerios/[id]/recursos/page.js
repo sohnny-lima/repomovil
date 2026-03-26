@@ -173,6 +173,7 @@ export default function AdminMinistryResourcesPage() {
   };
 
   const activeMeta = TYPE_META[form.type] || TYPE_META.PDF;
+  const isMayordomia = ministrySlug === 'mayordomia' || ministryName?.toLowerCase()?.includes('mayordom');
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -185,14 +186,14 @@ export default function AdminMinistryResourcesPage() {
           <h1 className="text-2xl font-bold text-gray-900">Recursos — {ministryName}</h1>
           <p className="text-gray-600 text-sm mt-1">Gestiona los archivos de este ministerio</p>
         </div>
-        {ministrySlug !== 'mayordomia' && !showForm && (
+        {!isMayordomia && !showForm && (
           <Button onClick={() => { setShowForm(true); setEditId(null); setForm(EMPTY_FORM); setError(''); }}>
             <Plus size={16} className="mr-1" /> Nuevo recurso
           </Button>
         )}
       </div>
 
-      {ministrySlug === 'mayordomia' ? (
+      {isMayordomia ? (
         <Card>
           <CardBody className="py-12 text-center">
             <div className="mx-auto w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4">
