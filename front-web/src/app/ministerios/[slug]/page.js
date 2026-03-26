@@ -169,7 +169,7 @@ export default function MinistryPage() {
             </div>
 
             {/* Ministry Resources Section (Only if elements exist) */}
-            {ministry.resources && ministry.resources.length > 0 && (
+            {ministry.slug !== 'mayordomia' && ministry.resources && ministry.resources.length > 0 && (
               <>
                 {/* Type filters */}
                 <div className="flex flex-wrap gap-2 mb-6 max-w-2xl mx-auto">

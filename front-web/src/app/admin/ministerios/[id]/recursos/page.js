@@ -52,6 +52,7 @@ export default function AdminMinistryResourcesPage() {
   const [saving, setSaving]             = useState(false);
   const [error, setError]               = useState('');
   const [ministryName, setMinistryName] = useState('Ministerio');
+  const [ministrySlug, setMinistrySlug] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const fileRef = useRef(null);
 
@@ -62,6 +63,7 @@ export default function AdminMinistryResourcesPage() {
       .then((d) => {
         setResources(d?.data || []);
         if (d?.ministryName) setMinistryName(d.ministryName);
+        if (d?.slug) setMinistrySlug(d.slug);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -183,15 +185,33 @@ export default function AdminMinistryResourcesPage() {
           <h1 className="text-2xl font-bold text-gray-900">Recursos — {ministryName}</h1>
           <p className="text-gray-600 text-sm mt-1">Gestiona los archivos de este ministerio</p>
         </div>
-        {!showForm && (
+        {ministrySlug !== 'mayordomia' && !showForm && (
           <Button onClick={() => { setShowForm(true); setEditId(null); setForm(EMPTY_FORM); setError(''); }}>
             <Plus size={16} className="mr-1" /> Nuevo recurso
           </Button>
         )}
       </div>
 
-      {/* Form */}
-      {showForm && (
+      {ministrySlug === 'mayordomia' ? (
+        <Card>
+          <CardBody className="py-12 text-center">
+            <div className="mx-auto w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4">
+              <FileText size={32} />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Administración centralizada</h2>
+            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+              El ministerio de Mayordomía no utiliza este sistema de recursos directos. 
+              Todo su contenido se administra usando el sistema originario desde la sección global de Categorías e Items.
+            </p>
+            <Link href="/admin/categories" className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors shadow-sm">
+              <FileText size={18} /> Ir a Administrar Categorías
+            </Link>
+          </CardBody>
+        </Card>
+      ) : (
+        <>
+          {/* Form */}
+          {showForm && (
         <Card className="mb-8">
           <CardHeader>
             <h2 className="text-lg font-bold text-gray-900">{editId ? 'Editar recurso' : 'Nuevo recurso'}</h2>
@@ -365,6 +385,8 @@ export default function AdminMinistryResourcesPage() {
             );
           })}
         </div>
+      )}
+        </>
       )}
     </div>
   );

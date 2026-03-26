@@ -80,6 +80,10 @@ router.post("/:id/resources", validateRequest(resourceSchema), async (req, res, 
     const ministry = await prisma.ministry.findUnique({ where: { id } });
     if (!ministry) return res.status(404).json({ ok: false, message: "Ministry not found" });
 
+    if (ministry.slug === "mayordomia") {
+      return res.status(403).json({ ok: false, message: "Mayordomía no permite recursos directos. Usa Categorías." });
+    }
+
     const created = await prisma.ministryresource.create({
       data: { ...req.validated.body, ministryId: id },
     });
