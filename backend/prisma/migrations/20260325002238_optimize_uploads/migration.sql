@@ -5,7 +5,7 @@
 
 */
 -- AlterTable
-ALTER TABLE `ministryresource` DROP COLUMN `size`,
+ALTER TABLE `MinistryResource` DROP COLUMN `size`,
     ADD COLUMN `extension` VARCHAR(191) NULL,
     ADD COLUMN `sizeBytes` BIGINT NULL,
     ADD COLUMN `storagePath` TEXT NULL,
