@@ -1,0 +1,84 @@
+{
+  "ministries": [
+    {
+      "id": "cmn5a6wc70000ysixbzjftcx1",
+      "name": "Mayordomía",
+      "slug": "mayordomia",
+      "description": "Ministerio de Mayordomía",
+      "isDefault": true,
+      "createdAt": "2026-03-25T00:04:12.714Z",
+      "updatedAt": "2026-03-25T00:04:12.714Z"
+    },
+    {
+      "id": "cmn5a6wcs0001ysixu1xepwo8",
+      "name": "Secretaría Ministerial",
+      "slug": "secretaria-ministerial",
+      "description": "Secretaría Ministerial",
+      "isDefault": true,
+      "createdAt": "2026-03-25T00:04:12.745Z",
+      "updatedAt": "2026-03-25T00:04:12.745Z"
+    },
+    {
+      "id": "cmn5a6wde0002ysix8s148xso",
+      "name": "Salud",
+      "slug": "salud",
+      "description": "Ministerio de Salud",
+      "isDefault": true,
+      "createdAt": "2026-03-25T00:04:12.768Z",
+      "updatedAt": "2026-03-25T00:04:12.768Z"
+    },
+    {
+      "id": "cmn5a6wdy0003ysixnlyxqome",
+      "name": "Familia",
+      "slug": "familia",
+      "description": "Ministerio de Familia",
+      "isDefault": true,
+      "createdAt": "2026-03-25T00:04:12.787Z",
+      "updatedAt": "2026-03-25T00:04:12.787Z"
+    },
+    {
+      "id": "cmn5a6wef0004ysixz0entuu1",
+      "name": "MAP",
+      "slug": "map",
+      "description": "Ministerio de Alcance Público",
+      "isDefault": true,
+      "createdAt": "2026-03-25T00:04:12.804Z",
+      "updatedAt": "2026-03-25T00:04:12.804Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cmn58tx6q0000toixc9ha62sp",
+      "name": "zzz",
+      "description": "zzz",
+      "iconKey": null,
+      "iconColor": null,
+      "imageUrl": "/uploads/hero-1774394766336-835553900.png",
+      "isActive": true,
+      "ministryId": "cmn5a6wc70000ysixbzjftcx1",
+      "createdAt": "2026-03-24T23:26:07.671Z"
+    },
+    {
+      "id": "cmn58vdrk0002toix7mer9wi9",
+      "name": "aaa",
+      "description": "aaa",
+      "iconKey": null,
+      "iconColor": null,
+      "imageUrl": "/uploads/hero-1774394834625-562882252.png",
+      "isActive": true,
+      "ministryId": "cmn5a6wc70000ysixbzjftcx1",
+      "createdAt": "2026-03-24T23:27:15.822Z"
+    },
+    {
+      "id": "cmn7u5ac50000skixke2mzfbc",
+      "name": "asd",
+      "description": "asd",
+      "iconKey": null,
+      "iconColor": null,
+      "imageUrl": "/uploads/images/1774551501007-lx3dwo-logoconectados.png",
+      "isActive": true,
+      "ministryId": "cmn5a6wc70000ysixbzjftcx1",
+      "createdAt": "2026-03-26T18:58:22.216Z"
+    }
+  ]
+}

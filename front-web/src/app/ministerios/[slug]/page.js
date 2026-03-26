@@ -111,13 +111,21 @@ export default function MinistryPage() {
   const { slug } = useParams();
   const [ministry, setMinistry] = useState(null);
   const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(false);
   const [filter, setFilter]     = useState('ALL');
 
   useEffect(() => {
     if (!slug) return;
     getMinistryBySlug(slug)
       .then(setMinistry)
-      .catch(console.error)
+      .catch((err) => {
+        console.error("Error cargando ministerio:", err);
+        if (err.response?.status === 404) {
+          setMinistry(null);
+        } else {
+          setError(true);
+        }
+      })
       .finally(() => setLoading(false));
   }, [slug]);
 
@@ -137,6 +145,11 @@ export default function MinistryPage() {
         {loading ? (
           <div className="flex items-center justify-center py-24">
             <Loader2 size={40} className="animate-spin text-green-500" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-24 bg-red-50 dark:bg-red-900/10 rounded-3xl border border-red-100 dark:border-red-900/30 max-w-2xl mx-auto">
+            <p className="text-red-500 dark:text-red-400 text-xl font-bold">Error cargando datos</p>
+            <p className="text-red-400 dark:text-red-500 mt-2">Por favor intenta de nuevo más tarde.</p>
           </div>
         ) : !ministry ? (
           <div className="text-center py-24">
@@ -198,10 +211,7 @@ export default function MinistryPage() {
           <div className="mt-8">
             <div className="max-w-2xl mx-auto space-y-4">
               {ministry.categories.map((category) => (
-                <CategoryCard key={category.id} category={{
-                  ...category,
-                  items: category.item || [] // Mapper to adapt Prisma's 'item' to CategoryCard's expected 'items' array
-                }} />
+                <CategoryCard key={category.id} category={category} />
               ))}
             </div>
           </div>
